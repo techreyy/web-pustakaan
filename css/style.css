@@ -397,7 +397,8 @@ ul, ol { list-style: none; }
    QUIZ
    ============================================ */
 .quiz-section { background: linear-gradient(180deg, #2C1810 0%, #1A0A00 100%); position: relative; overflow: hidden; }
-.quiz-section::before { content: '🎭'; position: absolute; top: -20px; right: -20px; font-size: 180px; opacity: 0.04; pointer-events: none; }
+.quiz-section::before { content: ''; position: absolute; top: -20px; right: -20px; width: 220px; height: 220px; opacity: 0.05; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 11h.01'/%3E%3Cpath d='M14 6h.01'/%3E%3Cpath d='M18 6h.01'/%3E%3Cpath d='M6.5 13.1h.01'/%3E%3Cpath d='M22 5c0 9-4 12-6 12s-6-3-6-12c0-2 2-3 6-3s6 1 6 3'/%3E%3Cpath d='M17.4 9.9c-.8.8-2 .8-2.8 0'/%3E%3Cpath d='M10.1 7.1C9 7.2 7.7 7.7 6 8.6c-3.5 2-4.7 3.9-3.7 5.6 4.5 7.8 9.5 8.4 11.2 7.4.9-.5 1.9-2.1 1.9-4.7'/%3E%3Cpath d='M9.1 16.5c.3-1.1 1.4-1.7 2.4-1.4'/%3E%3C/svg%3E") no-repeat center / contain; }
 .quiz-wrap { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; text-align: center; }
 .quiz-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(212,172,13,0.2); border-radius: var(--radius-xl); padding: 44px; backdrop-filter: blur(20px); }
 .q-prog-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
@@ -657,3 +658,53 @@ ul, ol { list-style: none; }
   .cat-grid{grid-template-columns:repeat(2,1fr)}
   .quiz-card{padding:26px 18px}
 }
+
+
+/* ============================================
+   IKON SVG (pengganti emoji)
+   ============================================ */
+.ic { width: 1em; height: 1em; display: inline-block; vertical-align: -0.15em; flex-shrink: 0; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0.05em; }
+
+/* Ikon besar di dalam lingkaran (kuis, CTA, kontribusi, hasil kuis) */
+.big-ico { width: 84px; height: 84px; margin: 0 auto 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; color: var(--gold); background: rgba(212,172,13,0.12); border: 1px solid rgba(212,172,13,0.3); }
+.big-ico.sm { width: 56px; height: 56px; font-size: 26px; margin: 0 0 12px; }
+.ic-love { color: var(--primary); fill: currentColor; }
+
+/* Gambar sampul kartu & modal: ikon kategori di atas gradasi */
+.c-img-placeholder, .m-hero-ph {
+  color: rgba(255,255,255,0.92);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,0.22), transparent 45%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 14px),
+    linear-gradient(135deg, var(--cc), color-mix(in srgb, var(--cc) 55%, #1A0A00));
+}
+.c-img-placeholder .ic { font-size: 64px; stroke-width: 1.5; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25)); transition: transform 0.5s ease; }
+.c-card:hover .c-img-placeholder .ic { transform: scale(1.1) rotate(-4deg); }
+.m-hero-ph .ic { font-size: 110px; stroke-width: 1.25; opacity: 0.9; }
+.sim-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; flex-shrink: 0; background: linear-gradient(135deg, var(--cc), color-mix(in srgb, var(--cc) 60%, #1A0A00)); }
+
+/* Kategori */
+.cat-icon { color: var(--cat-clr, var(--primary)); }
+.cat-icon .ic { stroke-width: 1.75; }
+.cat-card.active .cat-icon { color: #fff; }
+
+/* Favorit & suka: hati terisi saat aktif */
+.c-fav { color: #fff; }
+.c-fav.on .ic, .m-act-btn[data-action="like"].on .ic { fill: currentColor; }
+.m-act-ico { font-size: 20px; line-height: 1; }
+
+/* Avatar inisial komentar */
+.cmt-av-sm { color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }
+.cmt-avatar { color: var(--dark); }
+
+/* Ikon status lainnya */
+.no-result-ico, .fav-empty-ico { color: var(--text-muted); }
+.toast-ico { display: flex; font-size: 18px; color: var(--gold); }
+.toast.ok .toast-ico { color: #2ECC71; }
+.toast.err .toast-ico { color: #E74C3C; }
+.ab-art { color: var(--dark); }
+.soc-btn { color: rgba(255,255,255,0.65); }
+.soc-btn:hover { color: var(--gold); }
+.hero-stat-icon, .nav-logo-icon, .f-logo-icon { color: var(--gold); }
+.nav-logo-icon .ic, .f-logo-icon .ic { color: #fff; }

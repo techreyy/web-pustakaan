@@ -69,12 +69,28 @@ function getComments(id) {
   return [...base, ...user];
 }
 
+// ---- AVATAR INISIAL (pengganti emoji) ----
+function avatar(name, cls) {
+  const words = String(name || '?').trim().split(/\s+/);
+  const init = (words[0][0] + (words[1] ? words[1][0] : '')).toUpperCase();
+  let h = 0;
+  for (const ch of String(name)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const color = PROVINCES[h % PROVINCES.length].color;
+  return `<div class="${cls}" style="background:${color}">${esc(init)}</div>`;
+}
+
+// ---- GAMBAR SAMPUL (ikon kategori di atas gradasi warna kategori) ----
+function coverArt(item, cls) {
+  const cat = getCategory(item.category);
+  return `<div class="${cls}" style="--cc:${cat ? cat.color : 'var(--primary)'}">${icon(cat ? cat.icon : 'book-open')}</div>`;
+}
+
 // ---- TOAST ----
-function showToast(msg, type='ok', icon='✅') {
+function showToast(msg, type='ok', iconName='circle-check') {
   const box = document.getElementById('toast-box');
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  t.innerHTML = `<span>${icon}</span> <span>${esc(msg)}</span>`;
+  t.innerHTML = `<span class="toast-ico">${icon(iconName)}</span> <span>${esc(msg)}</span>`;
   box.appendChild(t);
   requestAnimationFrame(() => t.classList.add('show'));
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3000);
@@ -112,21 +128,21 @@ function renderCard(item) {
   return `
     <div class="c-card anim-up" onclick="openDetail(${item.id})">
       <div class="c-card-img" style="${isGrid ? '' : 'height:190px'}">
-        <div class="c-img-placeholder">${esc(item.emoji)}</div>
+        ${coverArt(item, 'c-img-placeholder')}
         <div class="c-badges">
           ${prov ? `<span class="c-badge b-prov">${prov.short}</span>` : ''}
           ${cat ? `<span class="c-badge b-cat">${cat.label}</span>` : ''}
         </div>
-        <button class="c-fav ${fav?'on':''}" onclick="toggleFav(event,${item.id})" title="${fav?'Hapus dari favorit':'Simpan ke favorit'}">${fav?'❤️':'🤍'}</button>
-        ${item.audio ? `<div class="c-audio-badge">🎵 Audio</div>` : ''}
+        <button class="c-fav ${fav?'on':''}" onclick="toggleFav(event,${item.id})" title="${fav?'Hapus dari favorit':'Simpan ke favorit'}">${icon('heart')}</button>
+        ${item.audio ? `<div class="c-audio-badge">${icon('headphones')} Audio</div>` : ''}
       </div>
       <div class="c-body">
         <div class="c-title">${esc(item.title)}</div>
         <div class="c-desc">${esc(item.desc)}</div>
         <div class="c-foot">
           <div class="c-stats">
-            <span class="c-stat">👁️ ${formatNum(item.views)}</span>
-            <span class="c-stat">❤️ ${formatNum(item.likes)}</span>
+            <span class="c-stat">${icon('eye')} ${formatNum(item.views)}</span>
+            <span class="c-stat">${icon('heart')} ${formatNum(item.likes)}</span>
           </div>
           <span style="font-size:11px;color:var(--text-muted)">${prov ? prov.name : ''}</span>
         </div>
@@ -151,7 +167,7 @@ function renderExplorer() {
 
   if (data.length === 0) {
     container.innerHTML = `<div class="no-result" style="grid-column:1/-1">
-      <div class="no-result-ico">🔍</div>
+      <div class="no-result-ico">${icon('search')}</div>
       <div class="no-result-title">Tidak Ada Hasil</div>
       <p style="font-size:14px;color:var(--text-muted)">Coba gunakan kata kunci atau filter yang berbeda</p>
     </div>`;
@@ -172,9 +188,9 @@ function renderFavorites() {
   const items = [...CULTURE_DATA, ...State.contributions].filter(d => isFav(d.id));
   if (items.length === 0) {
     container.innerHTML = `<div class="fav-empty" style="grid-column:1/-1">
-      <div class="fav-empty-ico">💔</div>
+      <div class="fav-empty-ico">${icon('heart-off')}</div>
       <div class="fav-empty-title">Belum Ada Favorit</div>
-      <p style="font-size:14px">Klik ikon ❤️ pada koleksi budaya untuk menyimpannya di sini.</p>
+      <p style="font-size:14px">Klik ikon ${icon('heart')} pada koleksi budaya untuk menyimpannya di sini.</p>
     </div>`;
     return;
   }
@@ -194,7 +210,7 @@ function renderCategories() {
     return `<div class="cat-card ${State.activeCategory === cat.id ? 'active' : ''}"
       style="--cat-clr:${cat.color}"
       onclick="setCategory('${cat.id}')">
-      <span class="cat-icon">${cat.icon}</span>
+      <span class="cat-icon">${icon(cat.icon)}</span>
       <div class="cat-name">${cat.label}</div>
       <div class="cat-cnt">${cnt} berkas</div>
     </div>`;
@@ -250,7 +266,7 @@ function setProvince(id) {
   renderExplorer();
   if (id !== 'all') {
     const prov = getProvince(id);
-    if (prov) showToast(`Menampilkan budaya ${prov.name}`, 'ok', prov.color ? '📍' : '✅');
+    if (prov) showToast(`Menampilkan budaya ${prov.name}`, 'ok', 'map-pin');
   }
 }
 
@@ -284,10 +300,10 @@ function toggleFav(e, id) {
   e.stopPropagation();
   if (isFav(id)) {
     State.favorites = State.favorites.filter(f => f !== id);
-    showToast('Dihapus dari Favorit', 'ok', '💔');
+    showToast('Dihapus dari Favorit', 'ok', 'heart-off');
   } else {
     State.favorites.push(id);
-    showToast('Ditambahkan ke Favorit!', 'ok', '❤️');
+    showToast('Ditambahkan ke Favorit!', 'ok', 'heart');
   }
   saveState();
   renderExplorer();
@@ -301,11 +317,11 @@ function toggleLike(id) {
   if (isLiked(id)) {
     State.likes = State.likes.filter(l => l !== id);
     item.likes = Math.max(0, item.likes - 1);
-    showToast('Suka dihapus', 'ok', '👍');
+    showToast('Suka dihapus', 'ok', 'thumbs-up');
   } else {
     State.likes.push(id);
     item.likes += 1;
-    showToast('Terima kasih sudah menyukai!', 'ok', '❤️');
+    showToast('Terima kasih sudah menyukai!', 'ok', 'heart');
   }
   saveState();
   const btn = document.querySelector('.m-act-btn[data-action="like"]');
@@ -330,17 +346,17 @@ function openDetail(id) {
   modal.innerHTML = `
     <div class="m-box">
       <div class="m-hero">
-        <div class="m-hero-ph">${esc(item.emoji)}</div>
+        ${coverArt(item, 'm-hero-ph')}
         <div class="m-hero-grad"></div>
         <div class="m-hero-content">
           <div class="m-hero-badges">
-            ${prov ? `<span class="c-badge b-prov">📍 ${prov.name}</span>` : ''}
-            ${cat ? `<span class="c-badge b-cat">${cat.icon} ${cat.label}</span>` : ''}
+            ${prov ? `<span class="c-badge b-prov">${icon('map-pin')} ${prov.name}</span>` : ''}
+            ${cat ? `<span class="c-badge b-cat">${icon(cat.icon)} ${cat.label}</span>` : ''}
           </div>
           <h1 class="m-title">${esc(item.title)}</h1>
-          <p class="m-sub">📅 Terdaftar ${esc(item.tahun_terdaftar)} &nbsp;|&nbsp; 👤 ${esc(item.kontributor)}</p>
+          <p class="m-sub">${icon('calendar')} Terdaftar ${esc(item.tahun_terdaftar)} &nbsp;|&nbsp; ${icon('user')} ${esc(item.kontributor)}</p>
         </div>
-        <button class="m-close" onclick="closeDetail()">✕</button>
+        <button class="m-close" onclick="closeDetail()" aria-label="Tutup">${icon('x')}</button>
       </div>
       <div class="m-body">
         <div class="m-grid">
@@ -349,18 +365,18 @@ function openDetail(id) {
             <table class="m-table">
               <tr><td>Provinsi</td><td>${prov ? prov.name : '-'}</td></tr>
               <tr><td>Lokasi</td><td>${esc(item.lokasi)}</td></tr>
-              <tr><td>Kategori</td><td>${cat ? cat.icon + ' ' + cat.label : '-'}</td></tr>
+              <tr><td>Kategori</td><td>${cat ? cat.label : '-'}</td></tr>
               <tr><td>Terdaftar</td><td>${esc(item.tahun_terdaftar)}</td></tr>
               <tr><td>Kontributor</td><td>${esc(item.kontributor)}</td></tr>
               <tr><td>Tag</td><td>${item.tags.map(t=>`<span style="display:inline-block;background:var(--light-2);border-radius:50px;padding:2px 9px;font-size:11px;margin:2px;font-weight:500">#${esc(t)}</span>`).join('')}</td></tr>
             </table>
             ${item.audio ? `
             <div class="audio-box">
-              <div class="audio-lbl">🎵 Audio Budaya</div>
+              <div class="audio-lbl">${icon('headphones')} Audio Budaya</div>
               <div class="audio-song">${item.audio.title}</div>
               <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px">${item.audio.artist} &bull; ${item.audio.note}</div>
               <div class="audio-ctrls">
-                <button class="a-play" id="modal-play-btn" onclick="toggleAudio(${item.id})">▶️</button>
+                <button class="a-play" id="modal-play-btn" onclick="toggleAudio(${item.id})">${icon('play')}</button>
                 <div class="a-prog">
                   <div class="a-time">
                     <span id="modal-time-cur">0:00</span>
@@ -373,9 +389,9 @@ function openDetail(id) {
               </div>
             </div>` : ''}
             <div class="cmts">
-              <h3 class="cmts-title">💬 Diskusi <span style="font-size:14px;font-weight:500;color:var(--text-muted)">(${comments.length})</span></h3>
+              <h3 class="cmts-title">${icon('message-circle')} Diskusi <span style="font-size:14px;font-weight:500;color:var(--text-muted)">(${comments.length})</span></h3>
               <div class="cmt-form">
-                <div class="cmt-avatar">🙂</div>
+                <div class="cmt-avatar">${icon('user')}</div>
                 <div class="cmt-right">
                   <textarea class="cmt-input" id="cmt-input-${item.id}" rows="2" placeholder="Tulis komentarmu tentang ${esc(item.title)}..."></textarea>
                   <button class="cmt-sub" onclick="submitComment(${item.id})">Kirim</button>
@@ -384,7 +400,7 @@ function openDetail(id) {
               <div class="cmt-list" id="cmt-list-${item.id}">
                 ${comments.map(c => `
                 <div class="cmt-item">
-                  <div class="cmt-av-sm">${esc(c.avatar)}</div>
+                  ${avatar(c.name, 'cmt-av-sm')}
                   <div class="cmt-content">
                     <div class="cmt-hd"><span class="cmt-name">${esc(c.name)}</span><span class="cmt-time">${esc(c.time)}</span></div>
                     <p class="cmt-text">${esc(c.text)}</p>
@@ -396,48 +412,48 @@ function openDetail(id) {
           <div>
             <div class="m-actions">
               <button class="m-act-btn ${liked?'on':''}" data-action="like" onclick="toggleLike(${item.id})">
-                <span style="font-size:20px">${liked?'❤️':'🤍'}</span>
+                <span class="m-act-ico">${icon('heart')}</span>
                 <span>${liked?'Disukai':'Suka'}</span>
               </button>
               <button class="m-act-btn ${fav?'on':''}" data-action="fav" onclick="toggleFavModal(${item.id})">
-                <span style="font-size:20px">${fav?'🔖':'📌'}</span>
+                <span class="m-act-ico">${icon(fav ? 'bookmark-check' : 'bookmark')}</span>
                 <span>${fav?'Tersimpan':'Simpan'}</span>
               </button>
               <button class="m-act-btn" onclick="shareItem(${item.id})">
-                <span style="font-size:20px">📤</span>
+                <span class="m-act-ico">${icon('share-2')}</span>
                 <span>Bagikan</span>
               </button>
             </div>
             <div class="m-stat-grid">
               <div class="m-stat-box">
                 <div class="m-stat-num" id="modal-view-count">${formatNum(item.views)}</div>
-                <div class="m-stat-lbl">👁️ Dilihat</div>
+                <div class="m-stat-lbl">${icon('eye')} Dilihat</div>
               </div>
               <div class="m-stat-box">
                 <div class="m-stat-num" id="modal-like-count">${formatNum(item.likes)}</div>
-                <div class="m-stat-lbl">❤️ Disukai</div>
+                <div class="m-stat-lbl">${icon('heart')} Disukai</div>
               </div>
               <div class="m-stat-box">
                 <div class="m-stat-num">${comments.length}</div>
-                <div class="m-stat-lbl">💬 Komentar</div>
+                <div class="m-stat-lbl">${icon('message-circle')} Komentar</div>
               </div>
               <div class="m-stat-box">
                 <div class="m-stat-num">${item.tags.length}</div>
-                <div class="m-stat-lbl">🏷️ Tag</div>
+                <div class="m-stat-lbl">${icon('tag')} Tag</div>
               </div>
             </div>
             ${prov ? `
             <div style="background:linear-gradient(135deg,${prov.color}22,${prov.color}11);border:1px solid ${prov.color}33;border-radius:var(--radius-md);padding:16px;margin-bottom:16px">
-              <div style="font-size:11px;font-weight:700;color:${prov.color};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">📍 Provinsi</div>
+              <div style="font-size:11px;font-weight:700;color:${prov.color};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${icon('map-pin')} Provinsi</div>
               <div style="font-size:16px;font-weight:700;color:var(--text-dark)">${prov.name}</div>
               <div style="font-size:12px;color:var(--text-muted)">${prov.capital} — Ibukota</div>
               <button onclick="closeDetail();setProvince('${prov.id}')" style="margin-top:10px;font-size:12px;color:${prov.color};background:none;border:none;cursor:pointer;font-weight:600">Lihat semua budaya →</button>
             </div>` : ''}
             <div style="background:var(--light-2);border-radius:var(--radius-md);padding:16px">
-              <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">💡 Budaya Serupa</div>
+              <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">${icon('lightbulb')} Budaya Serupa</div>
               ${getSimilar(item).map(s => `
               <div onclick="openDetail(${s.id})" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-light);cursor:pointer;transition:var(--transition)" onmouseover="this.style.paddingLeft='6px'" onmouseout="this.style.paddingLeft='0'">
-                <span style="font-size:24px">${esc(s.emoji)}</span>
+                ${coverArt(s, 'sim-ico')}
                 <div><div style="font-size:13px;font-weight:600;color:var(--text-dark)">${esc(s.title)}</div><div style="font-size:11px;color:var(--text-muted)">${(getProvince(s.province)||{}).short}</div></div>
               </div>`).join('')}
             </div>
@@ -471,39 +487,39 @@ function closeDetail() {
 function toggleFavModal(id) {
   if (isFav(id)) {
     State.favorites = State.favorites.filter(f => f !== id);
-    showToast('Dihapus dari Favorit', 'ok', '💔');
+    showToast('Dihapus dari Favorit', 'ok', 'heart-off');
   } else {
     State.favorites.push(id);
-    showToast('Ditambahkan ke Favorit!', 'ok', '❤️');
+    showToast('Ditambahkan ke Favorit!', 'ok', 'heart');
   }
   saveState();
   const btn = document.querySelector('.m-act-btn[data-action="fav"]');
   if (btn) {
     btn.classList.toggle('on', isFav(id));
     btn.querySelector('span:last-child').textContent = isFav(id) ? 'Tersimpan' : 'Simpan';
-    btn.querySelector('span:first-child').textContent = isFav(id) ? '🔖' : '📌';
+    btn.querySelector('span:first-child').innerHTML = icon(isFav(id) ? 'bookmark-check' : 'bookmark');
   }
 }
 
 function shareItem(id) {
   const item = [...CULTURE_DATA, ...State.contributions].find(d => d.id === id);
   if (!item) return;
-  const text = `Yuk kenali budaya Sulawesi: "${item.title}" dari ${(getProvince(item.province)||{}).name}! Temukan di Perpustakaan Digital Budaya Sulawesi. 🌿`;
+  const text = `Yuk kenali budaya Sulawesi: "${item.title}" dari ${(getProvince(item.province)||{}).name}! Temukan di Perpustakaan Digital Budaya Sulawesi.`;
   if (navigator.share) {
     navigator.share({ title: item.title, text, url: window.location.href });
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(text);
-    showToast('Teks disalin ke clipboard!', 'ok', '📋');
+    showToast('Teks disalin ke clipboard!', 'ok', 'clipboard-check');
   } else {
-    showToast('Bagikan: ' + item.title, 'ok', '📤');
+    showToast('Bagikan: ' + item.title, 'ok', 'share-2');
   }
 }
 
 // ---- SUBMIT COMMENT ----
 function submitComment(id) {
   const inp = document.getElementById(`cmt-input-${id}`);
-  if (!inp || !inp.value.trim()) { showToast('Tulis komentar terlebih dahulu!', 'err', '⚠️'); return; }
-  const comment = { name: 'Sobat Budaya', avatar: '🙂', time: 'Baru saja', text: inp.value.trim() };
+  if (!inp || !inp.value.trim()) { showToast('Tulis komentar terlebih dahulu!', 'err', 'triangle-alert'); return; }
+  const comment = { name: 'Sobat Budaya', time: 'Baru saja', text: inp.value.trim() };
   if (!State.comments[id]) State.comments[id] = [];
   State.comments[id].unshift(comment);
   saveState();
@@ -513,14 +529,14 @@ function submitComment(id) {
     const el = document.createElement('div');
     el.className = 'cmt-item anim-up';
     el.innerHTML = `
-      <div class="cmt-av-sm">${esc(comment.avatar)}</div>
+      ${avatar(comment.name, 'cmt-av-sm')}
       <div class="cmt-content">
         <div class="cmt-hd"><span class="cmt-name">${esc(comment.name)}</span><span class="cmt-time">${esc(comment.time)}</span></div>
         <p class="cmt-text">${esc(comment.text)}</p>
       </div>`;
     list.prepend(el);
   }
-  showToast('Komentar terkirim!', 'ok', '💬');
+  showToast('Komentar terkirim!', 'ok', 'message-circle');
 }
 
 // ---- CONTRIBUTION MODAL ----
@@ -542,12 +558,12 @@ function submitContribution() {
   const lokasi = get('c-lokasi').value.trim();
   const desc = get('c-desc').value.trim();
   if (!title || !province || !category || !lokasi || !desc) {
-    showToast('Harap lengkapi semua kolom!', 'err', '⚠️'); return;
+    showToast('Harap lengkapi semua kolom!', 'err', 'triangle-alert'); return;
   }
   const cat = getCategory(category);
   const newItem = {
     id: Date.now(),
-    title, province, category, emoji: cat ? cat.icon : '📝',
+    title, province, category,
     desc, detail: desc, lokasi,
     tahun_terdaftar: new Date().getFullYear().toString(),
     kontributor: get('c-kontributor').value.trim() || 'Sobat Budaya Sulawesi',
@@ -560,7 +576,7 @@ function submitContribution() {
   saveState();
   closeContribModal();
   ['c-title','c-lokasi','c-desc','c-kontributor'].forEach(id => { const el = get(id); if(el) el.value = ''; });
-  showToast(`"${title}" berhasil ditambahkan! Terima kasih, Sobat Budaya! 🎉`, 'ok', '✅');
+  showToast(`"${title}" berhasil ditambahkan! Terima kasih, Sobat Budaya!`, 'ok', 'circle-check');
   renderCategories();
   renderProvinceList();
   renderExplorer();
@@ -573,7 +589,7 @@ function showAudioBar(item) {
   const bar = document.getElementById('audio-bar');
   document.getElementById('ab-title').textContent = item.audio.title;
   document.getElementById('ab-sub').textContent = item.audio.artist;
-  document.getElementById('ab-art').textContent = item.emoji;
+  document.getElementById('ab-art').innerHTML = icon((getCategory(item.category) || {}).icon || 'music');
   bar.classList.add('on');
 }
 function toggleAudio(id) {
@@ -585,8 +601,8 @@ function toggleAudio(id) {
   const barPlayBtn = document.getElementById('ab-play');
   const modalPlayBtn = document.getElementById('modal-play-btn');
   if (State.audioPlaying) {
-    if (barPlayBtn) barPlayBtn.textContent = '⏸️';
-    if (modalPlayBtn) modalPlayBtn.textContent = '⏸️';
+    if (barPlayBtn) barPlayBtn.innerHTML = icon('pause');
+    if (modalPlayBtn) modalPlayBtn.innerHTML = icon('pause');
     clearInterval(State.audioTimer);
     const dur = item.audio.duration;
     State.audioTimer = setInterval(() => {
@@ -596,13 +612,13 @@ function toggleAudio(id) {
         clearInterval(State.audioTimer);
         State.audioPlaying = false;
         State.audioProgress = 0;
-        if (barPlayBtn) barPlayBtn.textContent = '▶️';
-        if (modalPlayBtn) modalPlayBtn.textContent = '▶️';
+        if (barPlayBtn) barPlayBtn.innerHTML = icon('play');
+        if (modalPlayBtn) modalPlayBtn.innerHTML = icon('play');
       }
     }, 1000);
   } else {
-    if (barPlayBtn) barPlayBtn.textContent = '▶️';
-    if (modalPlayBtn) modalPlayBtn.textContent = '▶️';
+    if (barPlayBtn) barPlayBtn.innerHTML = icon('play');
+    if (modalPlayBtn) modalPlayBtn.innerHTML = icon('play');
     clearInterval(State.audioTimer);
   }
 }
@@ -674,7 +690,7 @@ function timeoutQuiz() {
   if (opts[q.answer]) opts[q.answer].classList.add('correct');
   const fb = document.getElementById('q-feedback');
   if (fb) {
-    fb.innerHTML = `⏰ <strong>Waktu habis!</strong> Jawaban yang benar: <strong>${q.options[q.answer]}</strong>. ${q.explanation}`;
+    fb.innerHTML = `${icon('clock')} <strong>Waktu habis!</strong> Jawaban yang benar: <strong>${q.options[q.answer]}</strong>. ${q.explanation}`;
     fb.style.color = '#E74C3C';
   }
   const next = document.getElementById('q-next');
@@ -701,20 +717,20 @@ function renderQuiz() {
   }
   const q = State.quizQuestions[State.quizIndex];
   const pct = (State.quizIndex / total * 100).toFixed(0);
-  const diffLabel = q.difficulty === 'mudah' ? { label: '🟢 Mudah', color: '#2ECC71' }
-    : q.difficulty === 'sulit' ? { label: '🔴 Sulit', color: '#E74C3C' }
-    : { label: '🟡 Sedang', color: '#F39C12' };
+  const diffLabel = q.difficulty === 'mudah' ? { label: 'Mudah', color: '#2ECC71' }
+    : q.difficulty === 'sulit' ? { label: 'Sulit', color: '#E74C3C' }
+    : { label: 'Sedang', color: '#F39C12' };
   wrap.innerHTML = `
     <div class="quiz-card">
       <div class="q-prog-row">
         <span class="q-prog-lbl">Pertanyaan ${State.quizIndex+1}/${total}</span>
         <div class="q-prog-bar"><div class="q-prog-fill" style="width:${pct}%"></div></div>
-        <span class="q-score">🏅 ${State.quizScore}/${total}</span>
+        <span class="q-score">${icon('award')} ${State.quizScore}/${total}</span>
       </div>
       <!-- Timer Row -->
       <div class="q-timer-row" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
         <span style="font-size:12px;color:rgba(255,255,255,0.5)">
-          <span style="color:${diffLabel.color};font-weight:600">${diffLabel.label}</span>
+          <span style="color:${diffLabel.color};font-weight:600"><span class="dot" style="background:${diffLabel.color}"></span>${diffLabel.label}</span>
         </span>
         <div style="flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden">
           <div id="q-timer-bar-fill" style="height:100%;width:100%;background:#2ECC71;border-radius:3px;transition:width 1s linear,background 0.3s"></div>
@@ -730,7 +746,7 @@ function renderQuiz() {
       </div>
       <p class="q-feedback" id="q-feedback"></p>
       <button class="q-next" id="q-next" style="display:none" onclick="nextQuiz()">
-        ${State.quizIndex+1 >= total ? 'Lihat Hasil 🏆' : 'Pertanyaan Berikutnya →'}
+        ${State.quizIndex+1 >= total ? 'Lihat Hasil' : 'Pertanyaan Berikutnya →'}
       </button>
     </div>`;
   // Start timer after DOM update
@@ -749,12 +765,12 @@ function answerQuiz(idx) {
   if (idx === q.answer) {
     State.quizScore++;
     opts[idx].classList.add('correct');
-    fb.innerHTML = `✅ <strong>Benar!</strong> ${q.explanation}`;
+    fb.innerHTML = `${icon('circle-check')} <strong>Benar!</strong> ${q.explanation}`;
     fb.style.color = '#2ECC71';
   } else {
     opts[idx].classList.add('wrong');
     if (opts[q.answer]) opts[q.answer].classList.add('correct');
-    fb.innerHTML = `❌ <strong>Kurang tepat.</strong> Jawaban benar: <strong>${q.options[q.answer]}</strong>. ${q.explanation}`;
+    fb.innerHTML = `${icon('circle-x')} <strong>Kurang tepat.</strong> Jawaban benar: <strong>${q.options[q.answer]}</strong>. ${q.explanation}`;
     fb.style.color = '#E74C3C';
   }
   if (next) next.style.display = 'inline-flex';
@@ -770,10 +786,10 @@ function renderQuizResult(total) {
   clearQuizTimer();
   const pct = Math.round(State.quizScore / total * 100);
   let title, desc, emoji;
-  if (pct >= 90) { emoji='🏆'; title = 'Maestro Budaya Sulawesi!'; desc = 'Luar biasa! Pengetahuan budaya Sulawesimu sangat mendalam.'; }
-  else if (pct >= 70) { emoji='🥈'; title = 'Sobat Budaya Sejati!'; desc = 'Bagus sekali! Kamu tahu banyak tentang kekayaan budaya Sulawesi.'; }
-  else if (pct >= 50) { emoji='📚'; title = 'Penjelajah Budaya'; desc = 'Tidak buruk! Terus jelajahi koleksi kami untuk menambah wawasanmu.'; }
-  else { emoji='🌱'; title = 'Pemula yang Bersemangat'; desc = 'Jangan menyerah! Jelajahi koleksi budaya kami dan coba lagi.'; }
+  if (pct >= 90) { emoji='trophy'; title = 'Maestro Budaya Sulawesi!'; desc = 'Luar biasa! Pengetahuan budaya Sulawesimu sangat mendalam.'; }
+  else if (pct >= 70) { emoji='medal'; title = 'Sobat Budaya Sejati!'; desc = 'Bagus sekali! Kamu tahu banyak tentang kekayaan budaya Sulawesi.'; }
+  else if (pct >= 50) { emoji='book-open'; title = 'Penjelajah Budaya'; desc = 'Tidak buruk! Terus jelajahi koleksi kami untuk menambah wawasanmu.'; }
+  else { emoji='sprout'; title = 'Pemula yang Bersemangat'; desc = 'Jangan menyerah! Jelajahi koleksi budaya kami dan coba lagi.'; }
 
   // Build answer grid
   const ansGrid = State.quizQuestions.map((q, i) => {
@@ -788,15 +804,15 @@ function renderQuizResult(total) {
   wrap.innerHTML = `
     <div class="quiz-card">
       <div class="q-result">
-        <div style="font-size:48px;margin-bottom:8px">${emoji}</div>
+        <div class="big-ico">${icon(emoji)}</div>
         <div class="q-big-score">${State.quizScore}/${total}</div>
         <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:12px">${pct}% jawaban benar</div>
         <div class="q-res-title">${title}</div>
         <div class="q-res-desc">${desc}</div>
         <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:16px 0">${ansGrid}</div>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <button class="q-next" onclick="initQuiz()">🔄 Main Lagi</button>
-          <button class="q-next" style="background:rgba(255,255,255,0.12);color:#fff" onclick="setTab('explorer');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})">🗺️ Jelajahi Budaya</button>
+          <button class="q-next" onclick="initQuiz()">${icon('rotate-ccw')} Main Lagi</button>
+          <button class="q-next" style="background:rgba(255,255,255,0.12);color:#fff" onclick="setTab('explorer');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})">${icon('map')} Jelajahi Budaya</button>
         </div>
       </div>
     </div>`;
@@ -891,7 +907,7 @@ function initMap() {
 
         const icon = L.divIcon({
           className: 'custom-leaflet-marker',
-          html: `<div style="background:${p.color};color:#fff;font-weight:700;font-size:11px;padding:6px 10px;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,0.35);border:2px solid #fff;white-space:nowrap;cursor:pointer">📍 ${p.name.replace('Sulawesi ', 'Sul. ')} (${cnt})</div>`,
+          html: `<div style="background:${p.color};color:#fff;font-weight:700;font-size:11px;padding:6px 10px;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,0.35);border:2px solid #fff;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:4px">${icon('map-pin')} ${p.name.replace('Sulawesi ', 'Sul. ')} (${cnt})</div>`,
           iconSize: [120, 32],
           iconAnchor: [60, 16]
         });
@@ -980,8 +996,8 @@ function initScrollAnimations() {
 function submitNewsletter(e) {
   e.preventDefault();
   const inp = document.getElementById('nl-input');
-  if (!inp.value.includes('@')) { showToast('Masukkan email yang valid!', 'err', '⚠️'); return; }
-  showToast(`Berhasil berlangganan dengan ${inp.value}! 🎉`, 'ok', '✅');
+  if (!inp.value.includes('@')) { showToast('Masukkan email yang valid!', 'err', 'triangle-alert'); return; }
+  showToast(`Berhasil berlangganan dengan ${inp.value}!`, 'ok', 'mail');
   inp.value = '';
 }
 
@@ -989,6 +1005,7 @@ function submitNewsletter(e) {
 // ---- INIT ----
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  hydrateIcons();
   renderCategories();
   renderProvinceList();
   renderExplorer();
