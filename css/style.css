@@ -718,3 +718,45 @@ ul, ol { list-style: none; }
 /* Audio belum tersedia */
 .audio-soon { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-top: 6px; }
 .audio-soon .ic { color: var(--gold); }
+
+/* ============================================
+   PETA: PENANDA, KONTROL, LOKASI SAYA
+   ============================================ */
+.prov-marker { color: #fff; font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.35); border: 2px solid #fff; white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.item-marker { width: 34px; height: 34px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--mc); border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; cursor: pointer; }
+.item-marker .ic { transform: rotate(45deg); }
+.custom-leaflet-marker:hover .item-marker { transform: rotate(-45deg) scale(1.12); }
+
+.map-pop { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; padding: 2px; min-width: 160px; }
+.map-pop strong { font-size: 14px; color: #fff; }
+.map-pop-img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 4px; }
+.map-pop-sub { font-size: 11px; color: rgba(255,255,255,0.6); }
+.map-pop-cnt { font-size: 12px; color: var(--gold); font-weight: 700; margin: 2px 0; }
+.map-pop-btn { margin-top: 6px; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-family: inherit; }
+.leaflet-popup-content { margin: 10px 12px !important; }
+
+.map-ctl { display: flex; flex-direction: column; gap: 6px; }
+.map-ctl button { display: flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px; border: 1px solid rgba(212,172,13,0.35); background: rgba(26,10,0,0.85); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; backdrop-filter: blur(6px); transition: var(--transition); }
+.map-ctl button:hover { border-color: var(--gold); }
+.map-ctl button.active { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+.map-ctl-loc.active { background: #2980B9 !important; border-color: #2980B9 !important; color: #fff !important; }
+.map-ctl-loc.loading .ic { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.me-dot { width: 20px; height: 20px; border-radius: 50%; background: #2980B9; border: 3px solid #fff; box-shadow: 0 0 0 0 rgba(41,128,185,0.6); animation: me-pulse 2s infinite; }
+@keyframes me-pulse { 0% { box-shadow: 0 0 0 0 rgba(41,128,185,0.6); } 70% { box-shadow: 0 0 0 16px rgba(41,128,185,0); } 100% { box-shadow: 0 0 0 0 rgba(41,128,185,0); } }
+
+.nearby-panel { position: absolute; left: 12px; bottom: 28px; z-index: 500; width: 250px; max-width: calc(100% - 24px); background: rgba(26,10,0,0.92); border: 1px solid rgba(212,172,13,0.35); border-radius: 12px; padding: 10px; backdrop-filter: blur(8px); text-align: left; }
+.nearby-head { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 6px; }
+.nearby-x { margin-left: auto; background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 14px; display: flex; }
+.nearby-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px; border: none; background: none; border-radius: 8px; cursor: pointer; color: #fff; font-family: inherit; text-align: left; }
+.nearby-item:hover { background: rgba(255,255,255,0.08); }
+.nearby-txt { display: flex; flex-direction: column; min-width: 0; }
+.nearby-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nearby-km { font-size: 11px; color: rgba(255,255,255,0.55); }
+
+@media (prefers-reduced-motion: reduce) { .me-dot, .map-ctl-loc.loading .ic { animation: none; } }
+
+/* Cluster penanda (tema emas) */
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background: rgba(212,172,13,0.35) !important; }
+.marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background: #1A0A00 !important; color: var(--gold) !important; font-weight: 700; border: 2px solid var(--gold); }

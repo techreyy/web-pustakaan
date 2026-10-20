@@ -153,6 +153,7 @@ function renderCard(item) {
 
 // ---- RENDER EXPLORER ----
 function renderExplorer() {
+  refreshMapMarkers();
   const container = document.getElementById('culture-grid');
   if (!container) return;
   const data = getFilteredData();
@@ -891,7 +892,7 @@ function initMap() {
     path.addEventListener('mouseleave', () => { if(tip) tip.classList.remove('show'); });
   });
 
-  // 2. Setup Leaflet Real GIS Google-style Map
+  // 2. Peta Leaflet (OpenStreetMap)
   if (typeof L !== 'undefined' && document.getElementById('leaflet-map')) {
     try {
       leafletInstance = L.map('leaflet-map', {
@@ -901,57 +902,226 @@ function initMap() {
         scrollWheelZoom: false,
       });
 
-      // CartoDB Voyager / Google Maps style clean tile layer
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd',
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19
       }).addTo(leafletInstance);
 
-      // Coordinates & details for 6 provinces
-      const provinceGeo = [
-        { id: 'sulsel', name: 'Sulawesi Selatan', capital: 'Makassar', lat: -3.8, lng: 119.9, color: '#C0392B' },
-        { id: 'sulut', name: 'Sulawesi Utara', capital: 'Manado', lat: 1.47, lng: 124.84, color: '#2980B9' },
-        { id: 'sulteng', name: 'Sulawesi Tengah', capital: 'Palu', lat: -0.9, lng: 120.87, color: '#27AE60' },
-        { id: 'sultra', name: 'Sulawesi Tenggara', capital: 'Kendari', lat: -4.14, lng: 122.17, color: '#8E44AD' },
-        { id: 'sulbar', name: 'Sulawesi Barat', capital: 'Mamuju', lat: -2.67, lng: 118.88, color: '#E67E22' },
-        { id: 'gorontalo', name: 'Gorontalo', capital: 'Gorontalo', lat: 0.54, lng: 123.06, color: '#16A085' }
-      ];
-
-      provinceGeo.forEach(p => {
-        const allData = [...CULTURE_DATA, ...State.contributions];
-        const cnt = allData.filter(d => d.province === p.id).length;
-
-        const icon = L.divIcon({
-          className: 'custom-leaflet-marker',
-          html: `<div style="background:${p.color};color:#fff;font-weight:700;font-size:11px;padding:6px 10px;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,0.35);border:2px solid #fff;white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:4px">${icon('map-pin')} ${p.name.replace('Sulawesi ', 'Sul. ')} (${cnt})</div>`,
-          iconSize: [120, 32],
-          iconAnchor: [60, 16]
-        });
-
-        const marker = L.marker([p.lat, p.lng], { icon }).addTo(leafletInstance);
-
-        marker.bindPopup(`
-          <div style="font-family:'Outfit',sans-serif;padding:4px;text-align:center">
-            <strong style="font-size:14px;color:${p.color};display:block;margin-bottom:2px">${p.name}</strong>
-            <span style="font-size:11px;color:#666">Ibu Kota: ${p.capital}</span><br/>
-            <span style="font-size:12px;color:#D4AC0D;font-weight:700;display:inline-block;margin:6px 0">${cnt} Koleksi Budaya</span><br/>
-            <button onclick="setProvince('${p.id}');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})" 
-              style="background:${p.color};color:#fff;border:none;padding:7px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.2)">
-              Lihat Koleksi →
-            </button>
-          </div>
-        `);
-
-        marker.on('click', () => {
-          setProvince(p.id);
-        });
-      });
-
+      provinceLayer = L.layerGroup();
+      cultureLayer = L.markerClusterGroup
+        ? L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 40 })
+        : L.layerGroup();
+      buildProvinceMarkers();
+      refreshMapMarkers();
+      setMapLayer('budaya');
+      addMapControls();
     } catch (e) {
       console.warn('Leaflet map error:', e);
     }
   }
+}
+
+// ---- PETA: PENANDA ----
+let provinceLayer = null;
+let cultureLayer = null;
+let mapLayerMode = 'budaya';
+
+// Koordinat item; kontribusi tanpa koordinat ditaruh di tengah provinsinya.
+function itemLatLng(item) {
+  if (Number.isFinite(item.lat) && Number.isFinite(item.lng)) return [item.lat, item.lng];
+  const prov = getProvince(item.province);
+  return prov ? [prov.lat, prov.lng] : null;
+}
+
+function buildProvinceMarkers() {
+  const allData = [...CULTURE_DATA, ...State.contributions];
+  provinceLayer.clearLayers();
+  PROVINCES.forEach(p => {
+    const cnt = allData.filter(d => d.province === p.id).length;
+    const markerIcon = L.divIcon({
+      className: 'custom-leaflet-marker',
+      html: `<div class="prov-marker" style="background:${p.color}">${icon('map-pin')} ${p.name.replace('Sulawesi ', 'Sul. ')} (${cnt})</div>`,
+      iconSize: [120, 32],
+      iconAnchor: [60, 16]
+    });
+    L.marker([p.lat, p.lng], { icon: markerIcon })
+      .bindPopup(`
+        <div class="map-pop">
+          <strong style="color:${p.color}">${p.name}</strong>
+          <span class="map-pop-sub">Ibu Kota: ${p.capital}</span>
+          <span class="map-pop-cnt">${cnt} Koleksi Budaya</span>
+          <button class="map-pop-btn" style="background:${p.color}" onclick="setProvince('${p.id}');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})">Lihat Koleksi →</button>
+        </div>`)
+      .addTo(provinceLayer);
+  });
+}
+
+// Penanda per budaya mengikuti filter yang sedang aktif (provinsi, kategori, pencarian).
+function refreshMapMarkers() {
+  if (!cultureLayer) return;
+  buildProvinceMarkers();
+  cultureLayer.clearLayers();
+  getFilteredData().forEach(item => {
+    const pos = itemLatLng(item);
+    if (!pos) return;
+    const cat = getCategory(item.category);
+    const color = cat ? cat.color : '#C0392B';
+    const markerIcon = L.divIcon({
+      className: 'custom-leaflet-marker',
+      html: `<div class="item-marker" style="--mc:${color}">${icon(cat ? cat.icon : 'map-pin')}</div>`,
+      iconSize: [34, 34],
+      iconAnchor: [17, 34],
+      popupAnchor: [0, -30]
+    });
+    L.marker(pos, { icon: markerIcon, title: item.title })
+      .bindPopup(`
+        <div class="map-pop">
+          ${item.image ? `<img class="map-pop-img" src="${esc(item.image)}" alt="">` : ''}
+          <strong>${esc(item.title)}</strong>
+          <span class="map-pop-sub">${icon('map-pin')} ${esc(item.lokasi)}</span>
+          <button class="map-pop-btn" style="background:${color}" onclick="openDetail(${item.id})">Lihat Detail →</button>
+        </div>`, { maxWidth: 220 })
+      .addTo(cultureLayer);
+  });
+}
+
+function setMapLayer(mode) {
+  if (!leafletInstance) return;
+  mapLayerMode = mode;
+  if (mode === 'budaya') {
+    leafletInstance.removeLayer(provinceLayer);
+    leafletInstance.addLayer(cultureLayer);
+  } else {
+    leafletInstance.removeLayer(cultureLayer);
+    leafletInstance.addLayer(provinceLayer);
+  }
+  document.querySelectorAll('.map-ctl-layer').forEach(b => b.classList.toggle('active', b.dataset.layer === mode));
+}
+
+function addMapControls() {
+  const Ctl = L.Control.extend({
+    options: { position: 'topright' },
+    onAdd() {
+      const box = L.DomUtil.create('div', 'map-ctl');
+      box.innerHTML = `
+        <button class="map-ctl-layer" data-layer="budaya" onclick="setMapLayer('budaya')">${icon('map-pin')} Budaya</button>
+        <button class="map-ctl-layer" data-layer="provinsi" onclick="setMapLayer('provinsi')">${icon('map')} Provinsi</button>
+        <button class="map-ctl-loc" id="btn-locate" onclick="toggleLocate()">${icon('locate')} Lokasi Saya</button>`;
+      L.DomEvent.disableClickPropagation(box);
+      return box;
+    }
+  });
+  leafletInstance.addControl(new Ctl());
+  document.querySelectorAll('.map-ctl-layer').forEach(b => b.classList.toggle('active', b.dataset.layer === mapLayerMode));
+}
+
+// ---- PETA: LOKASI SAYA (real time via watchPosition) ----
+let locWatchId = null;
+let locMarker = null;
+let locCircle = null;
+let locFirstFix = false;
+let nearbyKey = '';
+
+function toggleLocate() {
+  if (locWatchId !== null) { stopLocate(); return; }
+  if (!('geolocation' in navigator)) {
+    showToast('Browser ini tidak mendukung lokasi', 'err', 'triangle-alert');
+    return;
+  }
+  locFirstFix = true;
+  document.getElementById('btn-locate')?.classList.add('active', 'loading');
+  locWatchId = navigator.geolocation.watchPosition(onLocation, onLocationError, {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 20000
+  });
+}
+
+function stopLocate() {
+  if (locWatchId !== null) navigator.geolocation.clearWatch(locWatchId);
+  locWatchId = null;
+  if (locMarker) { leafletInstance.removeLayer(locMarker); locMarker = null; }
+  if (locCircle) { leafletInstance.removeLayer(locCircle); locCircle = null; }
+  document.getElementById('btn-locate')?.classList.remove('active', 'loading');
+  const panel = document.getElementById('nearby-panel');
+  if (panel) panel.hidden = true;
+  nearbyKey = '';
+}
+
+function onLocation(pos) {
+  const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+  const here = [lat, lng];
+  document.getElementById('btn-locate')?.classList.remove('loading');
+  if (!locMarker) {
+    locMarker = L.marker(here, {
+      icon: L.divIcon({ className: 'custom-leaflet-marker', html: '<div class="me-dot"></div>', iconSize: [20, 20], iconAnchor: [10, 10] }),
+      zIndexOffset: 1000,
+      title: 'Lokasi kamu'
+    }).addTo(leafletInstance);
+    locCircle = L.circle(here, { radius: accuracy, color: '#2980B9', weight: 1, fillOpacity: 0.12 }).addTo(leafletInstance);
+  } else {
+    locMarker.setLatLng(here);
+    locCircle.setLatLng(here).setRadius(accuracy);
+  }
+  const nearby = nearestCultures(lat, lng, 3);
+  renderNearby(nearby);
+  if (locFirstFix) {
+    locFirstFix = false;
+    // Tampilkan posisi kamu sekaligus budaya terdekat
+    const pts = [here, ...nearby.map(n => itemLatLng(n.item))];
+    leafletInstance.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: 12 });
+  }
+}
+
+function onLocationError(err) {
+  // Sinyal GPS sempat hilang setelah posisi pertama didapat: tetap lacak, tunggu pembaruan berikutnya.
+  if (err.code !== 1 && locMarker) return;
+  const msg = err.code === 1 ? 'Izin lokasi ditolak. Aktifkan di pengaturan browser.'
+    : err.code === 3 ? 'Lokasi tidak ditemukan (waktu habis). Coba lagi.'
+    : 'Lokasi tidak tersedia saat ini.';
+  showToast(msg, 'err', 'triangle-alert');
+  stopLocate();
+}
+
+// Jarak garis lurus (km) dengan rumus haversine
+function distanceKm(lat1, lng1, lat2, lng2) {
+  const R = 6371, rad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * rad, dLng = (lng2 - lng1) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+function nearestCultures(lat, lng, n) {
+  return [...CULTURE_DATA, ...State.contributions]
+    .map(item => {
+      const pos = itemLatLng(item);
+      return pos ? { item, km: distanceKm(lat, lng, pos[0], pos[1]) } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.km - b.km)
+    .slice(0, n);
+}
+
+function formatKm(km) {
+  if (km < 1) return Math.round(km * 1000) + ' m';
+  return (km < 10 ? km.toFixed(1) : Math.round(km).toLocaleString('id')) + ' km';
+}
+
+function renderNearby(list) {
+  const panel = document.getElementById('nearby-panel');
+  if (!panel) return;
+  // Gambar ulang hanya jika daftar/jarak berubah (posisi diperbarui terus-menerus)
+  const key = list.map(n => n.item.id + ':' + formatKm(n.km)).join('|');
+  if (key === nearbyKey && !panel.hidden) return;
+  nearbyKey = key;
+  panel.hidden = false;
+  panel.innerHTML = `
+    <div class="nearby-head">${icon('locate')} Budaya terdekat darimu <button class="nearby-x" onclick="stopLocate()" aria-label="Tutup">${icon('x')}</button></div>
+    ${list.map(({ item, km }) => `
+      <button class="nearby-item" onclick="openDetail(${item.id})">
+        ${coverArt(item, 'sim-ico', 'sim-ico sim-img')}
+        <span class="nearby-txt"><span class="nearby-title">${esc(item.title)}</span><span class="nearby-km">${formatKm(km)}</span></span>
+      </button>`).join('')}`;
 }
 
 // ---- NAVBAR ----
