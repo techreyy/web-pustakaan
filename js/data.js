@@ -29,6 +29,8 @@ const CULTURE_DATA = [
   {
     id: 1,
     title: 'Tongkonan',
+    image: 'img/tongkonan.jpg',
+    imageCredit: { author: 'Benoît Vicart', license: 'CC0', source: 'https://commons.wikimedia.org/wiki/File:Tongkonan_traditionnal_Toraja_house.jpg' },
     province: 'sulsel',
     category: 'arsitektur',
     desc: 'Rumah adat masyarakat Toraja yang sangat ikonik dengan atap melengkung menyerupai perahu terbalik. Tongkonan merupakan pusat kehidupan sosial, budaya, dan spiritual masyarakat Toraja yang telah diakui sebagai warisan budaya dunia.',
@@ -48,6 +50,8 @@ const CULTURE_DATA = [
   {
     id: 2,
     title: 'Baju Bodo',
+    image: 'img/baju-bodo.jpg',
+    imageCredit: { author: 'Fery Indrawan', license: 'CC BY 2.0', source: 'https://commons.wikimedia.org/wiki/File:Baju_Bodo.jpg' },
     province: 'sulsel',
     category: 'pakaian',
     desc: 'Pakaian adat perempuan Bugis-Makassar yang merupakan salah satu pakaian tertua di dunia. Baju Bodo berbentuk segi empat dengan lengan pendek, terbuat dari kain tipis berwarna-warni yang mencerminkan status sosial pemakainya.',
@@ -66,6 +70,8 @@ const CULTURE_DATA = [
   {
     id: 3,
     title: 'Coto Makassar',
+    image: 'img/coto-makassar.jpg',
+    imageCredit: { author: 'Pungkas nurrohman', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Coto_makassar.jpg' },
     province: 'sulsel',
     category: 'kuliner',
     desc: 'Sup daging sapi khas Kota Makassar yang telah ada sejak abad ke-16. Coto Makassar dibuat dari jeroan sapi yang direbus bersama 40 macam rempah, disajikan dengan ketupat atau burasa.',
@@ -85,6 +91,8 @@ const CULTURE_DATA = [
   {
     id: 4,
     title: 'Tari Kipas Pakarena',
+    image: 'img/tari-kipas-pakarena.jpg',
+    imageCredit: { author: 'Ali Froghi', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Performing_pakarena_dance.jpg' },
     province: 'sulsel',
     category: 'tari',
     desc: 'Tarian tradisional perempuan suku Makassar yang menggunakan kipas sebagai properti utama. Tari Pakarena telah dinobatkan sebagai Warisan Budaya Tak Benda Indonesia oleh Kemendikbud.',
@@ -103,6 +111,8 @@ const CULTURE_DATA = [
   {
     id: 5,
     title: 'Rambu Solo',
+    image: 'img/rambu-solo.jpg',
+    imageCredit: { author: 'Ansensius', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Arak-arakan_pemakaman_Toraja.jpg' },
     province: 'sulsel',
     category: 'upacara',
     desc: 'Upacara pemakaman adat masyarakat Toraja yang merupakan pesta kematian terbesar dan paling megah di dunia. Rambu Solo dapat berlangsung selama berhari-hari bahkan berminggu-minggu.',
@@ -122,6 +132,8 @@ const CULTURE_DATA = [
   {
     id: 6,
     title: 'Badik Tana Luwu',
+    image: 'img/badik-tana-luwu.jpg',
+    imageCredit: { author: 'Rudyasho', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Badik_Bugis.jpg' },
     province: 'sulsel',
     category: 'senjata',
     desc: 'Senjata tradisional khas Bugis-Makassar yang merupakan simbol kehormatan dan keberanian. Badik memiliki bilah melengkung yang tajam dan pamor (motif) yang unik pada setiap senjata.',
@@ -138,6 +150,8 @@ const CULTURE_DATA = [
   {
     id: 7,
     title: 'Paraga (Marraga)',
+    image: 'img/paraga-marraga.jpg',
+    imageCredit: { author: 'Erwn07', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Tari_Paraga_Makassar.jpg' },
     province: 'sulsel',
     category: 'permainan',
     desc: 'Permainan tradisional masyarakat Bugis-Makassar yang menggunakan bola rotan dan dimainkan dengan gerakan akrobatik. Paraga mirip dengan sepak takraw dan biasa dimainkan oleh kaum laki-laki.',
@@ -154,6 +168,8 @@ const CULTURE_DATA = [
   {
     id: 8,
     title: 'Sop Konro',
+    image: 'img/sop-konro.jpg',
+    imageCredit: { author: 'Midori', license: 'CC BY 3.0', source: 'https://commons.wikimedia.org/wiki/File:Sop_Konro_tulang_leher_kerbau.JPG' },
     province: 'sulsel',
     category: 'kuliner',
     desc: 'Sup iga sapi khas Makassar dengan kuah hitam pekat yang berasal dari kluwek. Sop Konro terkenal dengan cita rasa yang kaya rempah dan daging iga yang empuk lumer di mulut.',
@@ -172,6 +188,8 @@ const CULTURE_DATA = [
   {
     id: 9,
     title: 'Tenun Ikat Toraja',
+    image: 'img/tenun-ikat-toraja.jpg',
+    imageCredit: { author: 'Hiart', license: 'CC0', source: 'https://commons.wikimedia.org/wiki/File:Indonesian_funeral_shroud,_Toraja_people,_Honolulu_Museum_of_Art_9993.1.JPG' },
     province: 'sulsel',
     category: 'pakaian',
     desc: 'Kain tenun tradisional masyarakat Toraja yang bermotif geometris khas dan penuh warna. Setiap motif pada kain Toraja mengandung makna simbolis yang berkaitan dengan kepercayaan Aluk Todolo.',
@@ -190,6 +208,8 @@ const CULTURE_DATA = [
   {
     id: 10,
     title: 'Kolintang',
+    image: 'img/kolintang.jpg',
+    imageCredit: { author: 'Sakurai Midori', license: 'CC BY-SA 3.0', source: 'https://commons.wikimedia.org/wiki/File:Kolintang_set.JPG' },
     province: 'sulut',
     category: 'musik',
     desc: 'Alat musik pukul tradisional masyarakat Minahasa, Sulawesi Utara yang terbuat dari kayu. Kolintang telah diakui UNESCO sebagai Warisan Budaya Tak Benda. Suaranya yang merdu khas menjadi identitas budaya Minahasa.',
@@ -214,6 +234,8 @@ const CULTURE_DATA = [
   {
     id: 11,
     title: 'Tari Kabasaran',
+    image: 'img/tari-kabasaran.jpg',
+    imageCredit: { author: 'Eko suratinojo', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:KABASARAN.jpg' },
     province: 'sulut',
     category: 'tari',
     desc: 'Tarian perang tradisional masyarakat Minahasa yang penuh semangat dan keberanian. Para penari menggunakan pakaian merah menyala dan senjata tradisional, menggambarkan keberanian prajurit Minahasa.',
@@ -230,6 +252,8 @@ const CULTURE_DATA = [
   {
     id: 12,
     title: 'Tinutuan (Bubur Manado)',
+    image: 'img/tinutuan-bubur-manado.jpg',
+    imageCredit: { author: 'Supardisahabu', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Bubur_Khas_Manado_(Tinutuan).jpg' },
     province: 'sulut',
     category: 'kuliner',
     desc: 'Bubur khas Kota Manado yang kaya akan sayuran segar. Tinutuan merupakan makanan sehat yang terdiri dari beras, singkong, labu kuning, dan berbagai jenis sayuran hijau yang dimasak bersama.',
@@ -264,6 +288,8 @@ const CULTURE_DATA = [
   {
     id: 14,
     title: 'Kain Bentenan',
+    image: 'img/kain-bentenan.jpg',
+    imageCredit: { author: 'Rahmaziz', license: 'CC BY 4.0', source: 'https://commons.wikimedia.org/wiki/File:Motif_kain_Bentenan_dari_Minahasa.jpg' },
     province: 'sulut',
     category: 'pakaian',
     desc: 'Kain tenun tradisional khas Minahasa yang pernah hampir punah dan kini sedang dilestarikan kembali. Kain Bentenan memiliki motif khas yang terinspirasi dari alam dan kepercayaan masyarakat Minahasa kuno.',
@@ -282,6 +308,8 @@ const CULTURE_DATA = [
   {
     id: 15,
     title: 'Rumah Adat Souraja',
+    image: 'img/rumah-adat-souraja.jpg',
+    imageCredit: { author: 'Crisco 1492', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Sou_Raja_or_Banua_Oge,_Palu,_Central_Sulawesi_2018-09-17_01.jpg' },
     province: 'sulteng',
     category: 'arsitektur',
     desc: 'Istana atau rumah besar adat Kaili, suku terbesar di Sulawesi Tengah. Souraja berarti rumah besar yang dahulu digunakan sebagai pusat pemerintahan raja-raja Kaili di lembah Palu.',
@@ -298,6 +326,8 @@ const CULTURE_DATA = [
   {
     id: 16,
     title: 'Lalove',
+    image: 'img/lalove.jpg',
+    imageCredit: { author: 'Post of Indonesia', license: 'Public domain', source: 'https://commons.wikimedia.org/wiki/File:Stamp_of_Indonesia_-_2014_-_Colnect_591170_-_Lalove_Sulawesi_Tengah.jpg' },
     province: 'sulteng',
     category: 'musik',
     desc: 'Suling bambu sakral masyarakat Kaili, Sulawesi Tengah yang digunakan dalam ritual pengobatan tradisional dan upacara adat. Lalove dipercaya memiliki kekuatan magis dan hanya boleh dimainkan oleh orang tertentu.',
@@ -321,6 +351,8 @@ const CULTURE_DATA = [
   {
     id: 17,
     title: 'Kapurung',
+    image: 'img/kapurung.jpg',
+    imageCredit: { author: 'Agustinusraharjo', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Kapurung.jpg' },
     province: 'sulteng',
     category: 'kuliner',
     desc: 'Makanan tradisional berbahan dasar sagu yang menjadi makanan pokok masyarakat beberapa daerah di Sulawesi Tengah dan Selatan. Kapurung disajikan dengan kuah ikan atau ayam yang kaya rempah dan asam.',
@@ -337,6 +369,8 @@ const CULTURE_DATA = [
   {
     id: 18,
     title: 'Tenun Donggala',
+    image: 'img/tenun-donggala.jpg',
+    imageCredit: { author: 'Anonim (koleksi KITLV)', license: 'CC BY 4.0', source: 'https://commons.wikimedia.org/wiki/File:Ikatweefsel_afkomstig_uit_Donggala,_KITLV_5527.tiff' },
     province: 'sulteng',
     category: 'pakaian',
     desc: 'Kain tenun tradisional dari Kabupaten Donggala, Sulawesi Tengah yang terkenal dengan motif dan warna yang cerah. Tenun Donggala telah mendapat pengakuan sebagai kain berkualitas tinggi dan kini diminati pasar internasional.',
@@ -355,6 +389,8 @@ const CULTURE_DATA = [
   {
     id: 19,
     title: 'Tari Lumense',
+    image: 'img/tari-lumense.jpg',
+    imageCredit: { author: 'Sangia bolonangka', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Tari_Lumense.jpeg' },
     province: 'sultra',
     category: 'tari',
     desc: 'Tarian adat masyarakat Buton, Sulawesi Tenggara yang merupakan tarian selamat datang untuk menyambut tamu kehormatan. Tari Lumense menampilkan gerak yang anggun diiringi musik tradisional Buton.',
@@ -387,6 +423,8 @@ const CULTURE_DATA = [
   {
     id: 21,
     title: 'Sinonggi',
+    image: 'img/sinonggi.jpg',
+    imageCredit: { author: 'Akhsan05', license: 'CC0', source: 'https://commons.wikimedia.org/wiki/File:Sinonggi.jpg' },
     province: 'sultra',
     category: 'kuliner',
     desc: 'Makanan pokok tradisional masyarakat Tolaki, Sulawesi Tenggara yang terbuat dari tepung sagu. Sinonggi memiliki tekstur kenyal dan transparan, biasanya disajikan dengan kuah santan atau ikan yang gurih.',
@@ -405,6 +443,8 @@ const CULTURE_DATA = [
   {
     id: 22,
     title: 'Rumah Adat Boyang',
+    image: 'img/rumah-adat-boyang.jpg',
+    imageCredit: { author: 'Indonesiagood', license: 'CC BY 4.0', source: 'https://commons.wikimedia.org/wiki/File:Galeri_Budaya_Nusantara_-_Rumah_Adat_Mandar.jpg' },
     province: 'sulbar',
     category: 'arsitektur',
     desc: 'Rumah adat tradisional suku Mandar, Sulawesi Barat. Boyang merupakan rumah panggung kayu yang dibangun tanpa menggunakan paku, melainkan menggunakan sistem pasak dan ikat yang kokoh.',
@@ -462,6 +502,8 @@ const CULTURE_DATA = [
   {
     id: 25,
     title: 'Kain Karawo',
+    image: 'img/kain-karawo.jpg',
+    imageCredit: { author: 'Sofealahinta', license: 'CC0', source: 'https://commons.wikimedia.org/wiki/File:Kain_karawo.jpg' },
     province: 'gorontalo',
     category: 'pakaian',
     desc: 'Kerajinan sulam bordir tradisional khas Provinsi Gorontalo yang dikerjakan dengan teknik mencabut benang kain dan mengisinya kembali dengan benang berwarna. Kain Karawo telah diakui sebagai warisan budaya nasional.',
@@ -497,6 +539,8 @@ const CULTURE_DATA = [
   {
     id: 27,
     title: 'Binte Biluhuta',
+    image: 'img/binte-biluhuta.jpg',
+    imageCredit: { author: 'Supardisahabu', license: 'CC BY-SA 4.0', source: 'https://commons.wikimedia.org/wiki/File:Binte_Biluhuta.jpg' },
     province: 'gorontalo',
     category: 'kuliner',
     desc: 'Sup jagung tradisional khas Gorontalo yang kaya akan cita rasa. Binte Biluhuta terbuat dari jagung muda, udang, kelapa parut, dan rempah-rempah yang dimasak menjadi sup yang segar dan lezat.',
@@ -571,6 +615,8 @@ const CULTURE_DATA = [
   {
     id: 31,
     title: 'Es Pisang Ijo',
+    image: 'img/es-pisang-ijo.jpg',
+    imageCredit: { author: 'Oceanmuse', license: 'CC BY 4.0', source: 'https://commons.wikimedia.org/wiki/File:Es_pisang_ijo_otentik_Makassar-1.jpg' },
     province: 'sulsel',
     category: 'kuliner',
     desc: 'Minuman segar khas Makassar yang terdiri dari pisang raja yang dibalut adonan tepung berwarna hijau dari daun suji, disajikan dengan sirup merah, bubur sumsum putih, dan serutan es batu.',

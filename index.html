@@ -545,9 +545,9 @@
     </div>
   </div>
   <div class="ab-ctrls">
-    <button class="ab-btn" onclick="State.audioProgress=Math.max(0,State.audioProgress-10)" title="Mundur 10 detik"><i data-icon="rewind"></i></button>
+    <button class="ab-btn" onclick="skipAudio(-10)" title="Mundur 10 detik"><i data-icon="rewind"></i></button>
     <button class="ab-btn play" id="ab-play" onclick="if(State.audioItem)toggleAudio(State.audioItem.id)" title="Play/Pause"><i data-icon="play"></i></button>
-    <button class="ab-btn" onclick="State.audioProgress=Math.min(State.audioItem&&State.audioItem.audio?State.audioItem.audio.duration:0,State.audioProgress+10)" title="Maju 10 detik"><i data-icon="fast-forward"></i></button>
+    <button class="ab-btn" onclick="skipAudio(10)" title="Maju 10 detik"><i data-icon="fast-forward"></i></button>
   </div>
   <button class="ab-close" onclick="closeAudioBar()" title="Tutup"><i data-icon="x"></i></button>
 </div>

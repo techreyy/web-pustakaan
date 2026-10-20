@@ -708,3 +708,13 @@ ul, ol { list-style: none; }
 .soc-btn:hover { color: var(--gold); }
 .hero-stat-icon, .nav-logo-icon, .f-logo-icon { color: var(--gold); }
 .nav-logo-icon .ic, .f-logo-icon .ic { color: #fff; }
+
+/* Foto */
+.sim-img { object-fit: cover; padding: 0; }
+.img-credit { font-size: 11px; color: var(--text-muted); margin: -8px 0 18px; line-height: 1.5; }
+.img-credit a { color: var(--text-light); text-decoration: underline; }
+.img-credit a:hover { color: var(--primary); }
+
+/* Audio belum tersedia */
+.audio-soon { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-top: 6px; }
+.audio-soon .ic { color: var(--gold); }

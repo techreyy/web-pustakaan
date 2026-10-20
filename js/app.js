@@ -42,9 +42,6 @@ const State = {
   quizTimeLeft: 20,    // seconds remaining per question
   // audio state
   audioItem: null,
-  audioPlaying: false,
-  audioProgress: 0,
-  audioTimer: null,
 };
 
 // ---- SAVE TO LOCALSTORAGE ----
@@ -79,8 +76,12 @@ function avatar(name, cls) {
   return `<div class="${cls}" style="background:${color}">${esc(init)}</div>`;
 }
 
-// ---- GAMBAR SAMPUL (ikon kategori di atas gradasi warna kategori) ----
-function coverArt(item, cls) {
+// ---- GAMBAR SAMPUL ----
+// Pakai foto bila ada; jika tidak, ikon kategori di atas gradasi warna kategori.
+function coverArt(item, cls, imgCls) {
+  if (item.image && imgCls) {
+    return `<img class="${imgCls}" src="${esc(item.image)}" alt="${esc(item.title)}" loading="lazy">`;
+  }
   const cat = getCategory(item.category);
   return `<div class="${cls}" style="--cc:${cat ? cat.color : 'var(--primary)'}">${icon(cat ? cat.icon : 'book-open')}</div>`;
 }
@@ -128,13 +129,13 @@ function renderCard(item) {
   return `
     <div class="c-card anim-up" onclick="openDetail(${item.id})">
       <div class="c-card-img" style="${isGrid ? '' : 'height:190px'}">
-        ${coverArt(item, 'c-img-placeholder')}
+        ${coverArt(item, 'c-img-placeholder', 'c-img-inner')}
         <div class="c-badges">
           ${prov ? `<span class="c-badge b-prov">${prov.short}</span>` : ''}
           ${cat ? `<span class="c-badge b-cat">${cat.label}</span>` : ''}
         </div>
         <button class="c-fav ${fav?'on':''}" onclick="toggleFav(event,${item.id})" title="${fav?'Hapus dari favorit':'Simpan ke favorit'}">${icon('heart')}</button>
-        ${item.audio ? `<div class="c-audio-badge">${icon('headphones')} Audio</div>` : ''}
+        ${hasAudio(item) ? `<div class="c-audio-badge">${icon('headphones')} Audio</div>` : ''}
       </div>
       <div class="c-body">
         <div class="c-title">${esc(item.title)}</div>
@@ -346,7 +347,7 @@ function openDetail(id) {
   modal.innerHTML = `
     <div class="m-box">
       <div class="m-hero">
-        ${coverArt(item, 'm-hero-ph')}
+        ${coverArt(item, 'm-hero-ph', 'm-hero-img')}
         <div class="m-hero-grad"></div>
         <div class="m-hero-content">
           <div class="m-hero-badges">
@@ -370,23 +371,28 @@ function openDetail(id) {
               <tr><td>Kontributor</td><td>${esc(item.kontributor)}</td></tr>
               <tr><td>Tag</td><td>${item.tags.map(t=>`<span style="display:inline-block;background:var(--light-2);border-radius:50px;padding:2px 9px;font-size:11px;margin:2px;font-weight:500">#${esc(t)}</span>`).join('')}</td></tr>
             </table>
+            ${item.imageCredit ? `
+            <p class="img-credit">${icon('camera')} Foto: ${esc(item.imageCredit.author)} · ${esc(item.imageCredit.license)} ·
+              <a href="${esc(item.imageCredit.source)}" target="_blank" rel="noopener">Wikimedia Commons</a></p>` : ''}
             ${item.audio ? `
             <div class="audio-box">
               <div class="audio-lbl">${icon('headphones')} Audio Budaya</div>
-              <div class="audio-song">${item.audio.title}</div>
-              <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px">${item.audio.artist} &bull; ${item.audio.note}</div>
+              <div class="audio-song">${esc(item.audio.title)}</div>
+              ${hasAudio(item) ? `
+              <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px">${esc(item.audio.artist)}</div>
               <div class="audio-ctrls">
-                <button class="a-play" id="modal-play-btn" onclick="toggleAudio(${item.id})">${icon('play')}</button>
+                <button class="a-play" id="modal-play-btn" onclick="toggleAudio(${item.id})" aria-label="Putar / jeda">${icon(isPlaying(item) ? 'pause' : 'play')}</button>
                 <div class="a-prog">
                   <div class="a-time">
                     <span id="modal-time-cur">0:00</span>
-                    <span>${Math.floor(item.audio.duration/60)}:${String(item.audio.duration%60).padStart(2,'0')}</span>
+                    <span id="modal-time-dur">--:--</span>
                   </div>
-                  <div class="a-bar" onclick="seekAudio(event,${item.audio.duration})">
+                  <div class="a-bar" onclick="seekAudio(event)">
                     <div class="a-fill" id="modal-prog-fill"></div>
                   </div>
                 </div>
-              </div>
+              </div>` : `
+              <div class="audio-soon">${icon('clock')} Rekaman segera hadir. Punya rekamannya? Bantu lewat menu Kontribusi.</div>`}
             </div>` : ''}
             <div class="cmts">
               <h3 class="cmts-title">${icon('message-circle')} Diskusi <span style="font-size:14px;font-weight:500;color:var(--text-muted)">(${comments.length})</span></h3>
@@ -453,7 +459,7 @@ function openDetail(id) {
               <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">${icon('lightbulb')} Budaya Serupa</div>
               ${getSimilar(item).map(s => `
               <div onclick="openDetail(${s.id})" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-light);cursor:pointer;transition:var(--transition)" onmouseover="this.style.paddingLeft='6px'" onmouseout="this.style.paddingLeft='0'">
-                ${coverArt(s, 'sim-ico')}
+                ${coverArt(s, 'sim-ico', 'sim-ico sim-img')}
                 <div><div style="font-size:13px;font-weight:600;color:var(--text-dark)">${esc(s.title)}</div><div style="font-size:11px;color:var(--text-muted)">${(getProvince(s.province)||{}).short}</div></div>
               </div>`).join('')}
             </div>
@@ -465,10 +471,7 @@ function openDetail(id) {
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  if (item.audio) {
-    State.audioItem = item;
-    showAudioBar(item);
-  }
+  if (isPlaying(item) || State.audioItem === item) updateAudioUI();
 }
 
 function getSimilar(item) {
@@ -560,7 +563,6 @@ function submitContribution() {
   if (!title || !province || !category || !lokasi || !desc) {
     showToast('Harap lengkapi semua kolom!', 'err', 'triangle-alert'); return;
   }
-  const cat = getCategory(category);
   const newItem = {
     id: Date.now(),
     title, province, category,
@@ -584,71 +586,86 @@ function submitContribution() {
 }
 
 // ---- AUDIO ----
+// Memutar file audio sungguhan (item.audio.src). Item tanpa src dianggap belum punya rekaman.
+const player = new Audio();
+player.preload = 'none';
+
+function hasAudio(item) { return !!(item && item.audio && item.audio.src); }
+function isPlaying(item) { return State.audioItem === item && !player.paused; }
+
+function fmtTime(sec) {
+  if (!Number.isFinite(sec)) return '--:--';
+  const t = Math.floor(sec);
+  return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+}
+
+function setPlayIcons(name) {
+  ['ab-play', 'modal-play-btn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.innerHTML = icon(name);
+  });
+}
+
 function showAudioBar(item) {
-  if (!item || !item.audio) return;
-  const bar = document.getElementById('audio-bar');
+  if (!hasAudio(item)) return;
   document.getElementById('ab-title').textContent = item.audio.title;
   document.getElementById('ab-sub').textContent = item.audio.artist;
   document.getElementById('ab-art').innerHTML = icon((getCategory(item.category) || {}).icon || 'music');
-  bar.classList.add('on');
+  document.getElementById('audio-bar').classList.add('on');
 }
+
 function toggleAudio(id) {
   const item = [...CULTURE_DATA, ...State.contributions].find(d => d.id === id);
-  if (!item || !item.audio) return;
-  State.audioItem = item;
-  showAudioBar(item);
-  State.audioPlaying = !State.audioPlaying;
-  const barPlayBtn = document.getElementById('ab-play');
-  const modalPlayBtn = document.getElementById('modal-play-btn');
-  if (State.audioPlaying) {
-    if (barPlayBtn) barPlayBtn.innerHTML = icon('pause');
-    if (modalPlayBtn) modalPlayBtn.innerHTML = icon('pause');
-    clearInterval(State.audioTimer);
-    const dur = item.audio.duration;
-    State.audioTimer = setInterval(() => {
-      State.audioProgress = Math.min(State.audioProgress + 1, dur);
-      updateAudioUI(dur);
-      if (State.audioProgress >= dur) {
-        clearInterval(State.audioTimer);
-        State.audioPlaying = false;
-        State.audioProgress = 0;
-        if (barPlayBtn) barPlayBtn.innerHTML = icon('play');
-        if (modalPlayBtn) modalPlayBtn.innerHTML = icon('play');
-      }
-    }, 1000);
+  if (!hasAudio(item)) return;
+  if (State.audioItem !== item) {
+    State.audioItem = item;
+    player.src = item.audio.src;
+    showAudioBar(item);
+  }
+  if (player.paused) {
+    player.play().catch(() => showToast('Audio gagal diputar', 'err', 'triangle-alert'));
   } else {
-    if (barPlayBtn) barPlayBtn.innerHTML = icon('play');
-    if (modalPlayBtn) modalPlayBtn.innerHTML = icon('play');
-    clearInterval(State.audioTimer);
+    player.pause();
   }
 }
-function updateAudioUI(dur) {
-  const pct = (State.audioProgress / dur * 100).toFixed(1);
-  const barFill = document.getElementById('ab-fill');
-  const modalFill = document.getElementById('modal-prog-fill');
-  const modalCur = document.getElementById('modal-time-cur');
-  if (barFill) barFill.style.width = pct + '%';
-  if (modalFill) modalFill.style.width = pct + '%';
-  if (modalCur) {
-    const m = Math.floor(State.audioProgress/60);
-    const s = State.audioProgress % 60;
-    modalCur.textContent = `${m}:${String(s).padStart(2,'0')}`;
-  }
+
+function updateAudioUI() {
+  const pct = player.duration ? (player.currentTime / player.duration * 100).toFixed(1) : 0;
+  ['ab-fill', 'modal-prog-fill'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.width = pct + '%';
+  });
+  const cur = document.getElementById('modal-time-cur');
+  const dur = document.getElementById('modal-time-dur');
+  if (cur) cur.textContent = fmtTime(player.currentTime);
+  if (dur) dur.textContent = fmtTime(player.duration);
 }
-function seekAudio(e, dur) {
-  const bar = e.currentTarget;
-  const rect = bar.getBoundingClientRect();
-  const pct = (e.clientX - rect.left) / rect.width;
-  State.audioProgress = Math.floor(pct * dur);
-  updateAudioUI(dur);
+
+function seekAudio(e) {
+  if (!player.duration) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  player.currentTime = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) * player.duration;
 }
+
+function skipAudio(sec) {
+  if (!player.duration) return;
+  player.currentTime = Math.max(0, Math.min(player.duration, player.currentTime + sec));
+}
+
 function closeAudioBar() {
-  clearInterval(State.audioTimer);
-  State.audioPlaying = false;
-  State.audioProgress = 0;
+  player.pause();
+  player.removeAttribute('src');
+  player.load();
   State.audioItem = null;
+  updateAudioUI();
   document.getElementById('audio-bar').classList.remove('on');
 }
+
+player.addEventListener('play', () => setPlayIcons('pause'));
+player.addEventListener('pause', () => setPlayIcons('play'));
+player.addEventListener('ended', () => { player.currentTime = 0; setPlayIcons('play'); });
+player.addEventListener('timeupdate', updateAudioUI);
+player.addEventListener('loadedmetadata', updateAudioUI);
 
 // ---- QUIZ ----
 // ---- QUIZ TIMER HELPERS ----
