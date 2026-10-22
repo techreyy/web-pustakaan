@@ -3,482 +3,275 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Perpustakaan Digital Budaya Sulawesi | PDBS</title>
+  <title>Pustaka Budaya Sulawesi</title>
   <meta name="description" content="Perpustakaan Digital Budaya Sulawesi — dokumentasi dan pelestarian kekayaan budaya dari 6 provinsi di Pulau Sulawesi: rumah adat, tarian, kuliner, musik, upacara, senjata, dan permainan tradisional." />
   <meta name="keywords" content="budaya sulawesi, toraja, minahasa, bugis, makassar, gorontalo, kaili, mandar, buton, tongkonan, kolintang, coto makassar" />
-  <meta property="og:title" content="Perpustakaan Digital Budaya Sulawesi" />
+  <meta name="theme-color" content="#F7F5F0" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)" />
+  <meta property="og:title" content="Pustaka Budaya Sulawesi" />
   <meta property="og:description" content="Eksplorasi kekayaan budaya dari 6 provinsi di Sulawesi dalam satu platform digital." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C0392B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/%3E%3Cpath d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B5482A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/%3E%3Cpath d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-<!-- ============================================================
-     TOAST BOX
-     ============================================================ -->
 <div class="toast-box" id="toast-box"></div>
 
-<!-- ============================================================
-     NAVBAR
-     ============================================================ -->
-<nav class="navbar" id="navbar">
-  <div class="nav-container">
-    <a class="nav-logo" href="#">
-      <div class="nav-logo-icon"><i data-icon="leaf"></i></div>
-      <div>
-        <div class="nav-logo-title">Pustaka Budaya Sulawesi</div>
-        <div class="nav-logo-sub">Sobat Budaya · PDBS</div>
-      </div>
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+  <div class="container nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><i data-icon="leaf"></i></span>
+      <span class="brand-name">Pustaka Budaya<span class="brand-sub">Sulawesi</span></span>
     </a>
 
-    <div class="nav-search">
-      <span class="nav-search-icon"><i data-icon="search"></i></span>
-      <input type="text" id="nav-search-input" placeholder="Cari budaya Sulawesi..." autocomplete="off"
-        oninput="if(this.value.length>2||this.value.length===0) doSearch(this.value)" />
-    </div>
+    <nav class="nav-links" id="nav-links">
+      <a class="nav-link" href="#koleksi" onclick="setTab('explorer')">Koleksi</a>
+      <a class="nav-link" href="#peta">Peta</a>
+      <a class="nav-link" href="#kuis">Kuis</a>
+      <a class="nav-link" href="#koleksi" onclick="setTab('favorites')">Favorit</a>
+    </nav>
 
-    <div class="nav-links" id="nav-links">
-      <button class="nav-link active" onclick="setTab('explorer');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})">
-        <i data-icon="map"></i> Jelajahi
-      </button>
-      <button class="nav-link" onclick="setTab('favorites');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})">
-        <i data-icon="heart"></i> Favorit
-      </button>
-      <button class="nav-link" onclick="setTab('quiz');document.getElementById('quiz-section').scrollIntoView({behavior:'smooth'})">
-        <i data-icon="target"></i> Kuis
-      </button>
-      <button class="nav-link" onclick="document.getElementById('map-section').scrollIntoView({behavior:'smooth'})">
-        <i data-icon="map-pin"></i> Peta
-      </button>
-      <button class="nav-btn-contribute nav-link" onclick="openContribModal()">
-        <i data-icon="pen-line"></i> Kontribusi
-      </button>
+    <div class="nav-right">
+      <label class="nav-search">
+        <i data-icon="search"></i>
+        <input type="search" id="nav-search-input" placeholder="Cari budaya…" autocomplete="off"
+          oninput="if(this.value.length>2||this.value.length===0) doSearch(this.value)" />
+      </label>
+      <button class="btn btn-dark btn-sm" onclick="openContribModal()"><i data-icon="plus"></i><span>Kontribusi</span></button>
+      <button class="icon-btn hamburger" id="hamburger" aria-label="Menu"><i data-icon="menu"></i></button>
     </div>
-
-    <button class="hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
   </div>
-</nav>
+</header>
 
-<!-- ============================================================
-     HERO SECTION
-     ============================================================ -->
+<main id="top">
+
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-orb hero-orb-1"></div>
-  <div class="hero-orb hero-orb-2"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="pulse"></span> Gerakan Sejuta Data Budaya</p>
+      <h1 class="hero-title">Warisan budaya <em>Sulawesi</em>, dalam satu pustaka.</h1>
+      <p class="hero-sub">
+        Rumah adat, tarian, kuliner, dan tradisi dari enam provinsi. Jelajahi, pelajari, dan bantu lestarikan bersama Sobat Budaya.
+      </p>
 
-  <div class="hero-container">
-    <div class="hero-badge">
-      <span class="pulse"></span>
-      Gerakan Sejuta Data Budaya Sulawesi
+      <div class="hero-search">
+        <i data-icon="search"></i>
+        <input type="text" id="hero-search-input" placeholder="Tongkonan, coto, kolintang…" />
+        <select id="hero-search-cat" aria-label="Kategori">
+          <option value="all">Semua kategori</option>
+          <option value="arsitektur">Rumah Adat</option>
+          <option value="pakaian">Pakaian & Tenun</option>
+          <option value="kuliner">Kuliner</option>
+          <option value="musik">Musik & Lagu</option>
+          <option value="tari">Tari & Seni</option>
+          <option value="upacara">Upacara Adat</option>
+          <option value="senjata">Senjata</option>
+          <option value="permainan">Permainan</option>
+        </select>
+        <button class="btn btn-accent" onclick="heroSearch()">Cari</button>
+      </div>
+
+      <dl class="hero-stats">
+        <div><dt id="stat-berkas">31</dt><dd>Berkas budaya</dd></div>
+        <div><dt id="stat-prov">6</dt><dd>Provinsi</dd></div>
+        <div><dt>8</dt><dd>Kategori</dd></div>
+        <div><dt id="stat-kontributor">200+</dt><dd>Sobat Budaya</dd></div>
+      </dl>
     </div>
 
-    <h1 class="hero-title">
-      Warisan Budaya<br>
-      <span class="grad">Pulau Sulawesi</span><br>
-      Dalam Genggamanmu
-    </h1>
-
-    <p class="hero-subtitle">
-      Perpustakaan digital terlengkap kekayaan budaya 6 provinsi Sulawesi.
-      Jelajahi, pelajari, dan lestarikan warisan leluhur bersama komunitas Sobat Budaya.
-    </p>
-
-    <!-- Big Search Bar -->
-    <div class="hero-search">
-      <select id="hero-search-cat" onchange="setCategory(this.value);document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})">
-        <option value="all">Semua Kategori</option>
-        <option value="arsitektur">Rumah Adat</option>
-        <option value="pakaian">Pakaian & Tenun</option>
-        <option value="kuliner">Kuliner</option>
-        <option value="musik">Musik & Lagu</option>
-        <option value="tari">Tari & Seni</option>
-        <option value="upacara">Upacara Adat</option>
-        <option value="senjata">Senjata</option>
-        <option value="permainan">Permainan</option>
-      </select>
-      <input type="text" id="hero-search-input" placeholder="Cari nama budaya, daerah, atau kata kunci..."
-        onkeyup="if(event.key==='Enter') heroSearch()" />
-      <button class="btn-search" onclick="heroSearch()"><i data-icon="search"></i> Cari</button>
-    </div>
-
-    <!-- Stats -->
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-icon"><i data-icon="book-open"></i></div>
-        <div>
-          <div class="hero-stat-num" id="stat-berkas">31+</div>
-          <div class="hero-stat-lbl">Berkas Budaya</div>
-        </div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-icon"><i data-icon="map"></i></div>
-        <div>
-          <div class="hero-stat-num" id="stat-prov">6</div>
-          <div class="hero-stat-lbl">Provinsi Sulawesi</div>
-        </div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-icon"><i data-icon="users"></i></div>
-        <div>
-          <div class="hero-stat-num" id="stat-kontributor">200+</div>
-          <div class="hero-stat-lbl">Sobat Budaya</div>
-        </div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-icon"><i data-icon="landmark"></i></div>
-        <div>
-          <div class="hero-stat-num">8</div>
-          <div class="hero-stat-lbl">Kategori Budaya</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     CATEGORIES SECTION
-     ============================================================ -->
-<section class="section cat-section" id="cat-section">
-  <div class="container">
-    <div class="sec-head">
-      <div>
-        <p class="sec-eyebrow">Kategori</p>
-        <h2 class="sec-title">Jelajahi Berdasarkan <span>Kategori</span></h2>
-        <p class="sec-desc">8 kategori warisan budaya dari seluruh penjuru Sulawesi</p>
-      </div>
-    </div>
-    <div class="cat-grid" id="cat-grid">
+    <div class="hero-mosaic" id="hero-mosaic" aria-hidden="true">
       <!-- Rendered by JS -->
     </div>
   </div>
 </section>
 
-<!-- ============================================================
-     MAP SECTION
-     ============================================================ -->
-<section class="section map-section" id="map-section">
-  <div class="container">
-    <div class="map-grid">
-      <!-- Left: Info -->
-      <div class="map-info">
-        <p class="sec-eyebrow light">Peta Interaktif</p>
-        <h2 class="sec-title light">Enam Provinsi <span>Sulawesi</span></h2>
-        <p class="sec-desc light">
-          Klik pada provinsi untuk menjelajahi kekayaan budaya dari setiap wilayah di Pulau Sulawesi.
-        </p>
-        <div class="prov-list" id="prov-list">
-          <!-- Rendered by JS -->
-        </div>
-      </div>
-
-      <!-- Right: Map Visual Container -->
-      <div class="map-visual">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap">
-          <div style="font-size:12px;color:rgba(255,255,255,0.7);background:rgba(212,172,13,0.1);padding:6px 14px;border-radius:20px;border:1px solid rgba(212,172,13,0.25);display:flex;align-items:center;gap:6px">
-            <span><i data-icon="lightbulb"></i> <strong>Petunjuk:</strong> Klik penanda untuk melihat budaya, atau tekan <strong>Lokasi Saya</strong> untuk menemukan budaya terdekat</span>
-          </div>
-          <div class="map-type-toggle" style="display:flex;gap:6px">
-            <button class="n-tab active" id="btn-map-gis" onclick="switchMapMode('gis')"><i data-icon="map"></i> Peta Google / GIS Real</button>
-            <button class="n-tab" id="btn-map-svg" onclick="switchMapMode('svg')"><i data-icon="palette"></i> Peta Vektor</button>
-          </div>
-        </div>
-
-        <!-- 1. Real Leaflet GIS Map Container -->
-        <div id="leaflet-map-box" class="map-svg-box" style="position:relative;height:480px;border-radius:var(--radius-lg);overflow:hidden;border:1px solid rgba(212,172,13,0.3)">
-          <div id="leaflet-map" style="width:100%;height:100%;z-index:1;background:#0F172A"></div>
-          <div id="nearby-panel" class="nearby-panel" hidden></div>
-        </div>
-
-        <!-- 2. Vector SVG Map Box (Alternative View) -->
-        <div id="map-svg-box" class="map-svg-box" style="display:none">
-          <div id="map-tip" class="map-tip"></div>
-          <svg id="sulawesi-svg" viewBox="0 0 480 520" xmlns="http://www.w3.org/2000/svg" aria-label="Peta Geografis Sulawesi">
-            <path d="M 120 120 Q 200 180 300 130 T 450 60" fill="none" stroke="rgba(212,172,13,0.06)" stroke-width="2" stroke-dasharray="4 4"/>
-            <path d="M 140 330 Q 240 370 330 300" fill="none" stroke="rgba(212,172,13,0.06)" stroke-width="2" stroke-dasharray="4 4"/>
-            <path class="prov-path" data-prov="sulteng" fill="#27AE60" opacity="0.88" d="M 165 190 L 175 160 L 205 135 L 225 152 L 255 168 L 310 188 L 355 205 L 365 220 L 335 235 L 285 220 L 242 205 L 220 225 L 210 265 L 180 260 L 165 240 L 155 210 Z"/>
-            <circle class="prov-path" data-prov="sulteng" cx="378" cy="225" r="6" fill="#27AE60" opacity="0.88"/>
-            <circle class="prov-path" data-prov="sulteng" cx="392" cy="235" r="4" fill="#27AE60" opacity="0.88"/>
-            <circle class="prov-path" data-prov="sulteng" cx="370" cy="242" r="3.5" fill="#27AE60" opacity="0.88"/>
-            <text x="235" y="192" text-anchor="middle" fill="white" font-size="9" font-weight="700" pointer-events="none">Sulteng</text>
-            <path class="prov-path" data-prov="gorontalo" fill="#16A085" opacity="0.88" d="M 205 135 L 250 118 L 298 100 L 308 116 L 265 132 L 225 152 Z"/>
-            <text x="256" y="121" text-anchor="middle" fill="white" font-size="8" font-weight="700" pointer-events="none">Gorontalo</text>
-            <path class="prov-path" data-prov="sulut" fill="#2980B9" opacity="0.88" d="M 298 100 L 345 84 L 395 64 L 425 44 L 442 54 L 422 75 L 375 95 L 335 110 L 308 116 Z"/>
-            <circle class="prov-path" data-prov="sulut" cx="442" cy="25" r="4.5" fill="#2980B9" opacity="0.88"/>
-            <circle class="prov-path" data-prov="sulut" cx="454" cy="12" r="3.5" fill="#2980B9" opacity="0.88"/>
-            <circle class="prov-path" data-prov="sulut" cx="432" cy="38" r="3" fill="#2980B9" opacity="0.88"/>
-            <text x="368" y="84" text-anchor="middle" fill="white" font-size="8.5" font-weight="700" pointer-events="none">Sulut</text>
-            <path class="prov-path" data-prov="sulbar" fill="#E67E22" opacity="0.88" d="M 155 210 L 165 240 L 180 260 L 175 300 L 140 315 L 125 285 L 128 250 L 140 215 Z"/>
-            <text x="150" y="265" text-anchor="middle" fill="white" font-size="8.5" font-weight="700" pointer-events="none">Sulbar</text>
-            <path class="prov-path" data-prov="sulsel" fill="#C0392B" opacity="0.88" d="M 180 260 L 210 265 L 225 280 L 220 330 L 205 390 L 195 440 L 165 455 L 140 445 L 135 395 L 140 315 L 175 300 Z"/>
-            <ellipse class="prov-path" data-prov="sulsel" cx="178" cy="480" rx="7" ry="14" fill="#C0392B" opacity="0.88"/>
-            <circle class="prov-path" data-prov="sulsel" cx="180" cy="502" r="4" fill="#C0392B" opacity="0.88"/>
-            <text x="172" y="370" text-anchor="middle" fill="white" font-size="9.5" font-weight="800" pointer-events="none">Sulsel</text>
-            <path class="prov-path" data-prov="sultra" fill="#8E44AD" opacity="0.88" d="M 210 265 L 220 225 L 242 205 L 285 220 L 315 255 L 305 315 L 270 330 L 235 315 L 225 280 Z"/>
-            <path class="prov-path" data-prov="sultra" fill="#8E44AD" opacity="0.88" d="M 265 338 L 295 338 L 305 380 L 285 435 L 260 415 L 255 365 Z"/>
-            <circle class="prov-path" data-prov="sultra" cx="330" cy="405" r="5.5" fill="#8E44AD" opacity="0.88"/>
-            <circle class="prov-path" data-prov="sultra" cx="348" cy="420" r="4" fill="#8E44AD" opacity="0.88"/>
-            <circle class="prov-path" data-prov="sultra" cx="320" cy="422" r="3" fill="#8E44AD" opacity="0.88"/>
-            <text x="265" y="275" text-anchor="middle" fill="white" font-size="9" font-weight="700" pointer-events="none">Sultra</text>
-          </svg>
-
-          <!-- Legend -->
-          <div class="map-legend">
-            <div class="leg-item"><div class="leg-dot" style="background:#C0392B"></div>Sulsel</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#2980B9"></div>Sulut</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#27AE60"></div>Sulteng</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#8E44AD"></div>Sultra</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#E67E22"></div>Sulbar</div>
-            <div class="leg-item"><div class="leg-dot" style="background:#16A085"></div>Gorontalo</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     EXPLORER SECTION (Tabs: Jelajahi | Favorit | Kuis)
-     ============================================================ -->
-<section class="section" id="explorer-section" style="background:var(--light-bg)">
+<!-- KOLEKSI -->
+<section class="section" id="koleksi">
   <div class="container">
     <div class="sec-head">
       <div>
-        <p class="sec-eyebrow">Koleksi Digital</p>
-        <h2 class="sec-title">Berkas <span>Budaya Sulawesi</span></h2>
-        <p class="sec-desc">Jelajahi, simpan favorit, dan uji pengetahuan budayamu</p>
+        <p class="eyebrow">Koleksi</p>
+        <h2 class="sec-title">Berkas budaya</h2>
       </div>
-      <button class="view-all" onclick="openContribModal()"><i data-icon="pen-line"></i> Tambah Data</button>
+      <div class="seg" role="tablist">
+        <button class="seg-btn n-tab active" data-tab="explorer" onclick="setTab('explorer')">Jelajahi</button>
+        <button class="seg-btn n-tab" data-tab="favorites" onclick="setTab('favorites')"><i data-icon="heart"></i> Favorit <span class="seg-count" id="fav-count">0</span></button>
+      </div>
     </div>
 
-    <!-- Tab Navigation -->
-    <div class="nav-tabs">
-      <button class="n-tab active" data-tab="explorer" onclick="setTab('explorer')"><i data-icon="map"></i> Jelajahi</button>
-      <button class="n-tab" data-tab="favorites" onclick="setTab('favorites')"><i data-icon="heart"></i> Favorit</button>
-      <button class="n-tab" data-tab="quiz" onclick="setTab('quiz');document.getElementById('quiz-section').scrollIntoView({behavior:'smooth'})"><i data-icon="target"></i> Kuis Budaya</button>
-    </div>
-
-    <!-- Tab: Explorer -->
     <div class="tab-content" id="tab-explorer">
-      <!-- Toolbar -->
-      <div class="explorer-bar">
-        <div class="filter-tags" id="province-filter-tags">
-          <button class="f-tag active" data-prov="all" onclick="setProvince('all');updateProvTags('all')">Semua Provinsi</button>
-          <button class="f-tag" data-prov="sulsel" onclick="setProvince('sulsel');updateProvTags('sulsel')"><span class="dot" style="background:#C0392B"></span>Sulsel</button>
-          <button class="f-tag" data-prov="sulut" onclick="setProvince('sulut');updateProvTags('sulut')"><span class="dot" style="background:#2980B9"></span>Sulut</button>
-          <button class="f-tag" data-prov="sulteng" onclick="setProvince('sulteng');updateProvTags('sulteng')"><span class="dot" style="background:#27AE60"></span>Sulteng</button>
-          <button class="f-tag" data-prov="sultra" onclick="setProvince('sultra');updateProvTags('sultra')"><span class="dot" style="background:#8E44AD"></span>Sultra</button>
-          <button class="f-tag" data-prov="sulbar" onclick="setProvince('sulbar');updateProvTags('sulbar')"><span class="dot" style="background:#E67E22"></span>Sulbar</button>
-          <button class="f-tag" data-prov="gorontalo" onclick="setProvince('gorontalo');updateProvTags('gorontalo')"><span class="dot" style="background:#16A085"></span>Gorontalo</button>
-        </div>
-        <select class="sort-sel" onchange="setSort(this.value)">
-          <option value="popular">Terpopuler</option>
-          <option value="views">Terbanyak Dilihat</option>
-          <option value="newest">Terbaru</option>
-          <option value="az">A–Z</option>
-        </select>
-        <div class="view-tog">
-          <button class="v-btn active" data-view="grid" onclick="setView('grid')" title="Grid View"><i data-icon="layout-grid"></i></button>
-          <button class="v-btn" data-view="list" onclick="setView('list')" title="List View"><i data-icon="list"></i></button>
+      <div class="chips" id="cat-grid"><!-- Rendered by JS --></div>
+
+      <div class="toolbar">
+        <div class="chips chips-sm" id="province-filter-tags"><!-- Rendered by JS --></div>
+        <div class="toolbar-right">
+          <select class="select" onchange="setSort(this.value)" aria-label="Urutkan">
+            <option value="popular">Terpopuler</option>
+            <option value="views">Terbanyak dilihat</option>
+            <option value="newest">Terbaru</option>
+            <option value="az">A–Z</option>
+          </select>
+          <div class="view-tog">
+            <button class="v-btn active" data-view="grid" onclick="setView('grid')" title="Grid" aria-label="Tampilan grid"><i data-icon="layout-grid"></i></button>
+            <button class="v-btn" data-view="list" onclick="setView('list')" title="Daftar" aria-label="Tampilan daftar"><i data-icon="list"></i></button>
+          </div>
         </div>
       </div>
 
-      <div class="srch-result-info" id="search-info" style="display:none"></div>
+      <div class="srch-result-info" id="search-info" hidden></div>
 
-      <div class="culture-grid g-4" id="culture-grid">
-        <!-- Rendered by JS -->
-      </div>
+      <div class="culture-grid g-4" id="culture-grid"><!-- Rendered by JS --></div>
 
-      <div class="load-more-wrap" id="load-more-wrap" style="display:none">
-        <button class="load-more-btn" onclick="State.displayCount+=12;renderExplorer()">
-          <i data-icon="arrow-down"></i> Muat <span id="load-more-count">12</span> Data Lagi
+      <div class="load-more-wrap" id="load-more-wrap" hidden>
+        <button class="btn btn-ghost" onclick="State.displayCount+=12;renderExplorer()">
+          Muat <span id="load-more-count">12</span> lagi <i data-icon="arrow-down"></i>
         </button>
       </div>
     </div>
 
-    <!-- Tab: Favorites -->
-    <div class="tab-content" id="tab-favorites" style="display:none">
-      <div class="culture-grid g-4" id="fav-grid">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
-
-    <!-- Tab: Quiz (redirect) -->
-    <div class="tab-content" id="tab-quiz" style="display:none">
-      <!-- quiz is in its own section below -->
+    <div class="tab-content" id="tab-favorites" hidden>
+      <div class="culture-grid g-4" id="fav-grid"><!-- Rendered by JS --></div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================
-     QUIZ SECTION
-     ============================================================ -->
-<section class="section quiz-section" id="quiz-section">
+<!-- PETA -->
+<section class="section section-tint" id="peta">
   <div class="container">
-    <div class="sec-head" style="justify-content:center;text-align:center;display:block;margin-bottom:40px">
-      <p class="sec-eyebrow" style="justify-content:center">Uji Pengetahuan</p>
-      <h2 class="sec-title light" style="color:#fff">Kuis Budaya <span>Sulawesi</span></h2>
-      <p class="sec-desc light" style="max-width:520px;margin:8px auto 0">
-        Seberapa dalam pengetahuanmu tentang kekayaan budaya Sulawesi? Jawab 8 pertanyaan pilihan ganda!
-      </p>
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Peta</p>
+        <h2 class="sec-title">Temukan di peta</h2>
+        <p class="sec-desc">Lokasi asli setiap budaya. Ganti ke citra satelit, buka di Google Maps, atau tekan <strong>Lokasi saya</strong> untuk melihat budaya terdekat.</p>
+      </div>
+    </div>
+
+    <div class="map-shell">
+      <aside class="map-side">
+        <div class="map-side-head">Provinsi</div>
+        <div class="prov-list" id="prov-list"><!-- Rendered by JS --></div>
+      </aside>
+      <div class="map-box" id="leaflet-map-box">
+        <div id="leaflet-map"></div>
+        <div id="nearby-panel" class="nearby-panel" hidden></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KUIS -->
+<section class="section" id="kuis">
+  <div class="container container-narrow">
+    <div class="sec-head sec-head-center">
+      <div>
+        <p class="eyebrow">Kuis</p>
+        <h2 class="sec-title">Seberapa kenal kamu dengan Sulawesi?</h2>
+        <p class="sec-desc">10 pertanyaan pilihan ganda, 20 detik per soal.</p>
+      </div>
     </div>
     <div class="quiz-wrap" id="quiz-wrap">
-      <div class="quiz-card" style="text-align:center;padding:56px 32px">
+      <div class="quiz-card quiz-intro">
         <div class="big-ico"><i data-icon="target"></i></div>
-        <h3 style="font-family:'Playfair Display',serif;font-size:26px;color:#fff;margin-bottom:12px">Siap Mengikuti Kuis?</h3>
-        <p style="color:rgba(255,255,255,0.6);font-size:15px;margin-bottom:32px">
-          8 pertanyaan tentang budaya, kuliner, tarian, dan tradisi dari 6 provinsi di Sulawesi
-        </p>
-        <button class="q-next" style="font-size:16px;padding:14px 36px" onclick="initQuiz()"><i data-icon="rocket"></i> Mulai Kuis</button>
+        <h3>Siap mulai?</h3>
+        <p>Budaya, kuliner, tarian, dan tradisi dari enam provinsi.</p>
+        <button class="btn btn-accent btn-lg" onclick="initQuiz()">Mulai kuis <i data-icon="arrow-right"></i></button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================
-     CTA / KONTRIBUSI BANNER
-     ============================================================ -->
-<section class="section cta-section">
+<!-- CTA -->
+<section class="section section-tight">
   <div class="container">
-    <div class="cta-inner">
-      <div class="big-ico"><i data-icon="handshake"></i></div>
-      <h2>Jadilah Sobat Budaya Sulawesi!</h2>
-      <p>
-        Bersama kita jaga kekayaan budaya Sulawesi agar tidak terlupakan.
-        Kontribusikan pengetahuanmu dan bantu dokumentasi warisan leluhur kita untuk generasi mendatang.
-      </p>
+    <div class="cta">
+      <div>
+        <h2>Jadilah <em>Sobat Budaya</em>.</h2>
+        <p>Kenal budaya Sulawesi yang belum tercatat? Tambahkan dan bantu lestarikan untuk generasi berikutnya.</p>
+      </div>
       <div class="cta-btns">
-        <button class="cta-btn-a" onclick="openContribModal()"><i data-icon="pen-line"></i> Tambah Data Budaya</button>
-        <button class="cta-btn-b" onclick="setTab('explorer');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="map"></i> Jelajahi Koleksi</button>
+        <button class="btn btn-light btn-lg" onclick="openContribModal()"><i data-icon="pen-line"></i> Tambah data</button>
+        <a class="btn btn-outline-light btn-lg" href="#koleksi" onclick="setTab('explorer')">Jelajahi koleksi</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================
-     FOOTER
-     ============================================================ -->
+</main>
+
+<!-- FOOTER -->
 <footer class="footer">
-  <div class="container">
-    <div class="footer-grid">
-      <!-- Brand -->
-      <div>
-        <div class="f-logo">
-          <div class="f-logo-icon"><i data-icon="leaf"></i></div>
-          <div>
-            <div class="f-logo-title">Pustaka Budaya Sulawesi</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase">Gerakan Sejuta Data Budaya</div>
-          </div>
-        </div>
-        <p class="f-brand-desc">
-          Platform digital partisipatif untuk mendokumentasikan dan melestarikan kekayaan budaya dari 6 provinsi di Pulau Sulawesi.
-          Bersama komunitas Sobat Budaya, kita jaga warisan leluhur untuk generasi mendatang.
-        </p>
-        <div class="f-stat-row">
-          <div class="fs"><div class="fs-n" id="f-stat-berkas">31+</div><div class="fs-l">Berkas</div></div>
-          <div class="fs"><div class="fs-n">6</div><div class="fs-l">Provinsi</div></div>
-          <div class="fs"><div class="fs-n">200+</div><div class="fs-l">Kontributor</div></div>
-        </div>
-      </div>
-
-      <!-- Kategori -->
-      <div>
-        <div class="f-head">Kategori</div>
-        <div class="f-links">
-          <span class="f-link" onclick="setCategory('arsitektur');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="house"></i> Rumah Adat</span>
-          <span class="f-link" onclick="setCategory('pakaian');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="shirt"></i> Pakaian & Tenun</span>
-          <span class="f-link" onclick="setCategory('kuliner');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="soup"></i> Kuliner Tradisional</span>
-          <span class="f-link" onclick="setCategory('musik');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="music"></i> Musik & Lagu</span>
-          <span class="f-link" onclick="setCategory('tari');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="drama"></i> Tari & Seni</span>
-          <span class="f-link" onclick="setCategory('upacara');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="sparkles"></i> Upacara Adat</span>
-          <span class="f-link" onclick="setCategory('senjata');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="swords"></i> Senjata Tradisional</span>
-          <span class="f-link" onclick="setCategory('permainan');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><i data-icon="target"></i> Permainan</span>
-        </div>
-      </div>
-
-      <!-- Provinsi -->
-      <div>
-        <div class="f-head">Provinsi</div>
-        <div class="f-links">
-          <span class="f-link" onclick="setProvince('sulsel');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#C0392B"></span>Sulawesi Selatan</span>
-          <span class="f-link" onclick="setProvince('sulut');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#2980B9"></span>Sulawesi Utara</span>
-          <span class="f-link" onclick="setProvince('sulteng');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#27AE60"></span>Sulawesi Tengah</span>
-          <span class="f-link" onclick="setProvince('sultra');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#8E44AD"></span>Sulawesi Tenggara</span>
-          <span class="f-link" onclick="setProvince('sulbar');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#E67E22"></span>Sulawesi Barat</span>
-          <span class="f-link" onclick="setProvince('gorontalo');document.getElementById('explorer-section').scrollIntoView({behavior:'smooth'})"><span class="dot" style="background:#16A085"></span>Gorontalo</span>
-        </div>
-      </div>
-
-      <!-- Newsletter -->
-      <div>
-        <div class="f-head">Sobat Budaya</div>
-        <p style="font-size:13px;margin-bottom:14px;line-height:1.6">
-          Dapatkan informasi terbaru seputar pelestarian budaya Sulawesi langsung ke email kamu.
-        </p>
-        <form class="nl-form" onsubmit="submitNewsletter(event)">
-          <input class="nl-in" id="nl-input" type="email" placeholder="alamat@email.com" required />
-          <button class="nl-btn" type="submit"><i data-icon="mail"></i> Berlangganan</button>
-        </form>
-        <div style="margin-top:20px">
-          <div class="f-head" style="margin-bottom:10px">Ikuti Kami</div>
-          <div class="f-socials">
-            <div class="soc-btn" title="Instagram" onclick="showToast('Instagram @pdbs.sulawesi','ok','instagram')"><i data-icon="instagram"></i></div>
-            <div class="soc-btn" title="Facebook" onclick="showToast('Facebook: Pustaka Budaya Sulawesi','ok','facebook')"><i data-icon="facebook"></i></div>
-            <div class="soc-btn" title="YouTube" onclick="showToast('YouTube: Budaya Sulawesi','ok','youtube')"><i data-icon="youtube"></i></div>
-            <div class="soc-btn" title="Twitter/X" onclick="showToast('Twitter: @pdbs_sulawesi','ok','twitter')"><i data-icon="twitter"></i></div>
-          </div>
-        </div>
+  <div class="container footer-grid">
+    <div class="f-brand">
+      <a class="brand" href="#top">
+        <span class="brand-mark"><i data-icon="leaf"></i></span>
+        <span class="brand-name">Pustaka Budaya<span class="brand-sub">Sulawesi</span></span>
+      </a>
+      <p>Platform digital partisipatif untuk mendokumentasikan dan melestarikan budaya dari enam provinsi di Pulau Sulawesi.</p>
+      <div class="f-socials">
+        <button class="icon-btn" title="Instagram" onclick="showToast('Instagram @pdbs.sulawesi','ok','instagram')"><i data-icon="instagram"></i></button>
+        <button class="icon-btn" title="Facebook" onclick="showToast('Facebook: Pustaka Budaya Sulawesi','ok','facebook')"><i data-icon="facebook"></i></button>
+        <button class="icon-btn" title="YouTube" onclick="showToast('YouTube: Budaya Sulawesi','ok','youtube')"><i data-icon="youtube"></i></button>
+        <button class="icon-btn" title="Twitter/X" onclick="showToast('Twitter: @pdbs_sulawesi','ok','twitter')"><i data-icon="twitter"></i></button>
       </div>
     </div>
 
-    <div class="f-bottom">
-      <p class="f-bottom-txt">
-        © 2025 Perpustakaan Digital Budaya Sulawesi · Dibuat dengan <i data-icon="heart" class="ic-love"></i> oleh Sobat Budaya Sulawesi
-      </p>
-      <p class="f-bottom-txt" style="color:rgba(255,255,255,0.3)">
-        Referensi: budaya-indonesia.org | Sobat Budaya Indonesia
-      </p>
+    <div>
+      <div class="f-head">Kategori</div>
+      <div class="f-links" id="f-cat-links"><!-- Rendered by JS --></div>
     </div>
+
+    <div>
+      <div class="f-head">Provinsi</div>
+      <div class="f-links" id="f-prov-links"><!-- Rendered by JS --></div>
+    </div>
+
+    <div>
+      <div class="f-head">Kabar terbaru</div>
+      <p class="f-note">Info pelestarian budaya Sulawesi langsung ke emailmu.</p>
+      <form class="nl-form" onsubmit="submitNewsletter(event)">
+        <input class="input" id="nl-input" type="email" placeholder="alamat@email.com" required />
+        <button class="btn btn-dark" type="submit">Daftar</button>
+      </form>
+    </div>
+  </div>
+  <div class="container f-bottom">
+    <span>© 2025 Pustaka Budaya Sulawesi · <span id="f-stat-berkas">31</span> berkas · Foto: Wikimedia Commons</span>
+    <span>Peta © Esri, OpenStreetMap · Google Maps</span>
   </div>
 </footer>
 
-<!-- ============================================================
-     DETAIL MODAL
-     ============================================================ -->
-<div class="m-overlay" id="detail-modal" role="dialog" aria-modal="true" aria-label="Detail Budaya">
-  <!-- Rendered by JS -->
-</div>
+<!-- DETAIL MODAL -->
+<div class="m-overlay" id="detail-modal" role="dialog" aria-modal="true" aria-label="Detail Budaya"></div>
 
-<!-- ============================================================
-     CONTRIBUTION MODAL
-     ============================================================ -->
-<div class="m-overlay contrib-m" id="contrib-modal" role="dialog" aria-modal="true" aria-label="Tambah Data Budaya">
-  <div class="m-box" style="max-width:680px">
-    <div class="contrib-head" style="background:linear-gradient(135deg,#1A0A00,#2C1810);padding:32px;color:#fff">
-      <button class="m-close" onclick="closeContribModal()" style="position:absolute;right:20px;top:20px"><i data-icon="x"></i></button>
-      <div class="big-ico sm"><i data-icon="pen-line"></i></div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:24px;margin-bottom:8px">Tambah Data Budaya</h2>
-      <p style="color:rgba(255,255,255,0.6);font-size:14px">
-        Berkontribusi untuk Gerakan Sejuta Data Budaya Sulawesi (GSDB). Setiap data yang kamu tambahkan membantu melestarikan warisan budaya kita.
-      </p>
+<!-- CONTRIBUTION MODAL -->
+<div class="m-overlay" id="contrib-modal" role="dialog" aria-modal="true" aria-label="Tambah Data Budaya">
+  <div class="m-box m-box-sm">
+    <div class="contrib-head">
+      <div>
+        <h2>Tambah data budaya</h2>
+        <p>Setiap data yang kamu tambahkan membantu Gerakan Sejuta Data Budaya Sulawesi.</p>
+      </div>
+      <button class="icon-btn" onclick="closeContribModal()" aria-label="Tutup"><i data-icon="x"></i></button>
     </div>
-    <div style="padding:28px;overflow-y:auto;max-height:70vh">
+    <div class="contrib-body">
       <div class="f-grid">
         <div class="f-grp full">
-          <label class="f-lbl">Nama / Judul Budaya <span style="color:var(--primary)">*</span></label>
-          <input class="f-inp" id="c-title" type="text" placeholder="Contoh: Tari Pepe-Pepeka ri Makka" />
+          <label class="f-lbl" for="c-title">Nama budaya <span class="req">*</span></label>
+          <input class="input" id="c-title" type="text" placeholder="Contoh: Tari Pepe-Pepeka ri Makka" />
         </div>
         <div class="f-grp">
-          <label class="f-lbl">Provinsi <span style="color:var(--primary)">*</span></label>
-          <select class="f-sel" id="c-province">
-            <option value="">-- Pilih Provinsi --</option>
+          <label class="f-lbl" for="c-province">Provinsi <span class="req">*</span></label>
+          <select class="input" id="c-province">
+            <option value="">Pilih provinsi</option>
             <option value="sulsel">Sulawesi Selatan</option>
             <option value="sulut">Sulawesi Utara</option>
             <option value="sulteng">Sulawesi Tengah</option>
@@ -488,9 +281,9 @@
           </select>
         </div>
         <div class="f-grp">
-          <label class="f-lbl">Kategori <span style="color:var(--primary)">*</span></label>
-          <select class="f-sel" id="c-category">
-            <option value="">-- Pilih Kategori --</option>
+          <label class="f-lbl" for="c-category">Kategori <span class="req">*</span></label>
+          <select class="input" id="c-category">
+            <option value="">Pilih kategori</option>
             <option value="arsitektur">Rumah Adat & Arsitektur</option>
             <option value="pakaian">Pakaian & Tenun</option>
             <option value="kuliner">Kuliner Tradisional</option>
@@ -502,88 +295,48 @@
           </select>
         </div>
         <div class="f-grp full">
-          <label class="f-lbl">Lokasi Spesifik <span style="color:var(--primary)">*</span></label>
-          <input class="f-inp" id="c-lokasi" type="text" placeholder="Contoh: Kabupaten Maros, Sulawesi Selatan" />
+          <label class="f-lbl" for="c-lokasi">Lokasi <span class="req">*</span></label>
+          <input class="input" id="c-lokasi" type="text" placeholder="Contoh: Kabupaten Maros, Sulawesi Selatan" />
         </div>
         <div class="f-grp full">
-          <label class="f-lbl">Deskripsi Singkat <span style="color:var(--primary)">*</span></label>
-          <textarea class="f-ta" id="c-desc" rows="4" placeholder="Tuliskan deskripsi, sejarah, dan keunikan budaya ini. Minimal 100 karakter..."></textarea>
+          <label class="f-lbl" for="c-desc">Deskripsi <span class="req">*</span></label>
+          <textarea class="input" id="c-desc" rows="4" placeholder="Sejarah, makna, dan keunikan budaya ini…"></textarea>
         </div>
         <div class="f-grp full">
-          <label class="f-lbl">Nama Kontributor</label>
-          <input class="f-inp" id="c-kontributor" type="text" placeholder="Nama lengkap atau nama tim / organisasi" />
+          <label class="f-lbl" for="c-kontributor">Nama kontributor</label>
+          <input class="input" id="c-kontributor" type="text" placeholder="Nama, tim, atau organisasi" />
         </div>
-        <div class="f-grp full" style="background:var(--light-2);border-radius:var(--radius-sm);padding:14px;border:1px dashed var(--border)">
-          <div style="font-size:12px;font-weight:600;color:var(--text-mid);margin-bottom:6px"><i data-icon="clipboard-list"></i> Ketentuan Kontribusi</div>
-          <ul style="font-size:12px;color:var(--text-light);line-height:1.8;padding-left:16px;list-style:disc">
-            <li>Data harus merupakan budaya asli dari Sulawesi</li>
-            <li>Deskripsi harus akurat dan dapat dipertanggungjawabkan</li>
-            <li>Kontributor bertanggung jawab atas keabsahan data</li>
-            <li>Data yang diterima akan ditampilkan setelah verifikasi</li>
-          </ul>
+        <div class="f-grp full f-rules">
+          <i data-icon="clipboard-list"></i>
+          <span>Data harus budaya asli Sulawesi, akurat, dan menjadi tanggung jawab kontributor. Data tampil setelah verifikasi.</span>
         </div>
       </div>
       <div class="f-acts">
-        <button class="btn-s" onclick="closeContribModal()">Batal</button>
-        <button class="btn-p" onclick="submitContribution()"><i data-icon="circle-check"></i> Kirim Data Budaya</button>
+        <button class="btn btn-ghost" onclick="closeContribModal()">Batal</button>
+        <button class="btn btn-accent" onclick="submitContribution()"><i data-icon="send"></i> Kirim</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ============================================================
-     STICKY AUDIO BAR
-     ============================================================ -->
+<!-- AUDIO BAR -->
 <div class="audio-bar" id="audio-bar">
   <div class="ab-art" id="ab-art"><i data-icon="music"></i></div>
   <div class="ab-info">
     <div class="ab-title" id="ab-title">Judul Audio</div>
     <div class="ab-sub" id="ab-sub">Artis</div>
   </div>
-  <div class="ab-prog">
-    <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.45);margin-bottom:4px">
-      <span>Audio Budaya Sulawesi</span>
-    </div>
-    <div class="a-bar">
-      <div class="a-fill" id="ab-fill"></div>
-    </div>
-  </div>
+  <div class="ab-prog"><div class="a-bar"><div class="a-fill" id="ab-fill"></div></div></div>
   <div class="ab-ctrls">
-    <button class="ab-btn" onclick="skipAudio(-10)" title="Mundur 10 detik"><i data-icon="rewind"></i></button>
-    <button class="ab-btn play" id="ab-play" onclick="if(State.audioItem)toggleAudio(State.audioItem.id)" title="Play/Pause"><i data-icon="play"></i></button>
-    <button class="ab-btn" onclick="skipAudio(10)" title="Maju 10 detik"><i data-icon="fast-forward"></i></button>
+    <button class="icon-btn" onclick="skipAudio(-10)" title="Mundur 10 detik"><i data-icon="rewind"></i></button>
+    <button class="icon-btn ab-play" id="ab-play" onclick="if(State.audioItem)toggleAudio(State.audioItem.id)" title="Putar/Jeda"><i data-icon="play"></i></button>
+    <button class="icon-btn" onclick="skipAudio(10)" title="Maju 10 detik"><i data-icon="fast-forward"></i></button>
   </div>
-  <button class="ab-close" onclick="closeAudioBar()" title="Tutup"><i data-icon="x"></i></button>
+  <button class="icon-btn" onclick="closeAudioBar()" title="Tutup"><i data-icon="x"></i></button>
 </div>
 
-<!-- ============================================================
-     SCRIPTS
-     ============================================================ -->
 <script src="js/icons.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
-<script>
-  // Helper to sync province filter tags
-  function updateProvTags(id) {
-    document.querySelectorAll('#province-filter-tags .f-tag').forEach(t => {
-      t.classList.toggle('active', t.dataset.prov === id);
-    });
-  }
-
-  // Extend setProvince to also update tags in explorer bar
-  const _origSetProvince = setProvince;
-  setProvince = function(id) {
-    _origSetProvince(id);
-    updateProvTags(id);
-  };
-
-  // Update footer stat
-  const origUpdateHero = updateHeroStats;
-  updateHeroStats = function() {
-    origUpdateHero();
-    const fb = document.getElementById('f-stat-berkas');
-    if (fb) fb.textContent = (CULTURE_DATA.length + State.contributions.length) + '+';
-  };
-</script>
 </body>
 </html>
