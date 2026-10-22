@@ -405,6 +405,13 @@ textarea.input { resize: vertical; min-height: 44px; line-height: 1.5; }
 .leaflet-popup-tip { background: var(--surface); }
 .leaflet-container a.leaflet-popup-close-button { color: #fff; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(20,19,17,.5); font: 16px/22px var(--font); text-align: center; }
 
+.g-logo { display: none; width: 66px; height: 26px; margin: 0 0 6px 8px !important; background: url("https://maps.gstatic.com/mapfiles/api-3/images/google4_hdpi.png") no-repeat left center / contain; pointer-events: none; }
+.is-google .g-logo { display: block; }
+.is-google.is-sat .g-logo { background-image: url("https://maps.gstatic.com/mapfiles/api-3/images/google_white5_hdpi.png"); }
+@media (prefers-color-scheme: dark) {
+  .is-google .g-logo { background-image: url("https://maps.gstatic.com/mapfiles/api-3/images/google_white5_hdpi.png"); }
+}
+
 .map-ctl { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 .map-ctl-group { display: flex; padding: 3px; gap: 2px; background: var(--surface); border-radius: 999px; box-shadow: var(--shadow); }
 .map-ctl-group button, .map-ctl-loc {

@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Konfigurasi lokal (berisi API key)
+js/config.js

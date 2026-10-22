@@ -13,6 +13,16 @@ npm run build    # hasil build di dist/
 npm run preview  # pratinjau hasil build
 ```
 
+## Google Maps (opsional)
+
+Tanpa API key, peta memakai tile Esri dan embed Google Maps biasa. Untuk memakai peta Google asli:
+
+1. Di [Google Cloud Console](https://console.cloud.google.com/apis/library), aktifkan **Map Tiles API** (peta utama) dan **Maps Embed API** (peta di halaman detail).
+2. Buat API key, lalu batasi dengan **HTTP referrer** (mis. `http://localhost:5173/*` dan domain situsmu) serta hanya untuk kedua API di atas.
+3. Salin `js/config.example.js` menjadi `js/config.js`, lalu isi `googleMapsKey`.
+
+`js/config.js` ada di `.gitignore`, jadi key tidak ikut ter-commit. Saat `npm run build`, file ini ikut tersalin ke `dist/js/`, jadi pastikan file itu ada di mesin yang menjalankan build.
+
 ## Struktur
 
 - `index.html`: halaman utama
@@ -20,6 +30,7 @@ npm run preview  # pratinjau hasil build
 - `js/data.js`: data budaya, provinsi, kategori, dan kuis
 - `js/app.js`: logika aplikasi (filter, modal, kuis, favorit, kontribusi)
 - `js/icons.js`: ikon SVG
+- `js/config.example.js`: contoh konfigurasi (API key Google Maps)
 - `img/`: foto budaya
 
 ## Kredit Foto

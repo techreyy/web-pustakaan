@@ -362,6 +362,9 @@ function toggleLike(id) {
 }
 
 // ---- GOOGLE MAPS ----
+// API key opsional dari js/config.js (tidak di-commit). Tanpa key, dipakai embed biasa dan tile Esri.
+const GMAPS_KEY = (window.PDBS_CONFIG || {}).googleMapsKey || '';
+
 // Item dengan koordinat dibuka tepat di titiknya; kontribusi tanpa koordinat dicari lewat nama + lokasi.
 function gmapsTarget(item) {
   if (Number.isFinite(item.lat) && Number.isFinite(item.lng)) return `${item.lat},${item.lng}`;
@@ -374,7 +377,9 @@ function gmapsRouteUrl(item) {
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(gmapsTarget(item))}`;
 }
 function gmapsEmbedUrl(item) {
-  return `https://maps.google.com/maps?q=${encodeURIComponent(gmapsTarget(item))}&z=14&output=embed`;
+  const q = encodeURIComponent(gmapsTarget(item));
+  if (GMAPS_KEY) return `https://www.google.com/maps/embed/v1/place?key=${encodeURIComponent(GMAPS_KEY)}&q=${q}&zoom=14&language=id`;
+  return `https://maps.google.com/maps?q=${q}&z=14&output=embed`;
 }
 
 // ---- OPEN DETAIL MODAL ----
@@ -858,6 +863,9 @@ function initMap() {
   if (typeof L === 'undefined' || !document.getElementById('leaflet-map')) return;
   try {
     leafletInstance = L.map('leaflet-map', {
+      // Wajib eksplisit: lapisan dasar dimuat async, dan tanpa maxZoom markercluster berputar tanpa henti
+      minZoom: 3,
+      maxZoom: 19,
       zoomControl: false,
       scrollWheelZoom: false,
     });
@@ -891,19 +899,120 @@ function initMap() {
     setMapLayer('budaya');
     addMapControls();
     darkQuery.addEventListener('change', () => { if (baseMode === 'peta') setBaseMap('peta'); });
+    leafletInstance.on('moveend', updateGoogleAttribution);
+
+    // Logo Google wajib tampil saat memakai tile Google
+    const logo = L.control({ position: 'bottomleft' });
+    logo.onAdd = () => L.DomUtil.create('div', 'g-logo');
+    logo.addTo(leafletInstance);
   } catch (e) {
     console.warn('Leaflet map error:', e);
   }
 }
 
-function setBaseMap(mode) {
+let currentBase = null;
+let baseReq = 0;
+let googleFailed = false;
+
+async function setBaseMap(mode) {
   if (!leafletInstance) return;
   baseMode = mode;
-  Object.values(baseLayers).forEach(l => leafletInstance.removeLayer(l));
-  const layer = mode === 'satelit' ? baseLayers.satelit : (darkQuery.matches ? baseLayers.dark : baseLayers.light);
-  layer.addTo(leafletInstance);
-  document.getElementById('leaflet-map-box')?.classList.toggle('is-sat', mode === 'satelit');
   document.querySelectorAll('.map-ctl-base').forEach(b => b.classList.toggle('active', b.dataset.base === mode));
+  const req = ++baseReq;
+  const layer = await pickBaseLayer(mode);
+  if (req !== baseReq) return;   // tombol lain sudah ditekan selagi menunggu
+  if (currentBase && currentBase !== layer) leafletInstance.removeLayer(currentBase);
+  currentBase = layer.addTo(leafletInstance);
+  const box = document.getElementById('leaflet-map-box');
+  box?.classList.toggle('is-sat', mode === 'satelit');
+  box?.classList.toggle('is-google', !!layer.gSession);
+  updateGoogleAttribution();
+}
+
+// Tile Google (Map Tiles API) bila ada key; jika gagal sekali, pakai Esri untuk sisa kunjungan.
+async function pickBaseLayer(mode) {
+  const kind = mode === 'satelit' ? 'satellite' : darkQuery.matches ? 'dark' : 'roadmap';
+  if (GMAPS_KEY && !googleFailed) {
+    try {
+      return await googleLayer(kind);
+    } catch (e) {
+      googleFailed = true;
+      console.warn('Google Map Tiles gagal, beralih ke Esri:', e);
+    }
+  }
+  return kind === 'satellite' ? baseLayers.satelit : kind === 'dark' ? baseLayers.dark : baseLayers.light;
+}
+
+// ---- PETA: GOOGLE MAP TILES ----
+const googleLayers = {};
+
+// Gaya gelap yang selaras dengan palet situs
+const GMAPS_DARK_STYLE = [
+  { elementType: 'geometry', stylers: [{ color: '#1e1d1b' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#a39d92' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#1e1d1b' }] },
+  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#4a4640' }] },
+  { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#22211e' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#2a2825' }] },
+  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#1f2a20' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#34312c' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#4a4239' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2a2825' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#121417' }] },
+  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#5c5850' }] },
+];
+
+async function googleLayer(kind) {
+  if (googleLayers[kind]) return googleLayers[kind];
+  const opts = kind === 'satellite'
+    ? { mapType: 'satellite', layerTypes: ['layerRoadmap'] }
+    : { mapType: 'roadmap', ...(kind === 'dark' ? { styles: GMAPS_DARK_STYLE } : {}) };
+  const res = await fetch(`https://tile.googleapis.com/v1/createSession?key=${encodeURIComponent(GMAPS_KEY)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ language: 'id-ID', region: 'ID', ...opts }),
+  });
+  if (!res.ok) throw new Error(`createSession ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const { session } = await res.json();
+  const layer = L.tileLayer(`https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=${session}&key=${encodeURIComponent(GMAPS_KEY)}`, {
+    maxZoom: 22,
+  });
+  layer.gSession = session;
+  googleLayers[kind] = layer;
+  return layer;
+}
+
+// Hak cipta data peta wajib ditampilkan sesuai area yang terlihat (endpoint viewport Map Tiles API).
+let googleAttrib = '';
+let attribTimer = null;
+
+function updateGoogleAttribution() {
+  clearTimeout(attribTimer);
+  attribTimer = setTimeout(async () => {
+    const ctl = leafletInstance.attributionControl;
+    const session = currentBase && currentBase.gSession;
+    let text = '';
+    if (session) {
+      const b = leafletInstance.getBounds();
+      const clamp = (v, m) => Math.max(-m, Math.min(m, v));
+      const q = new URLSearchParams({
+        session, key: GMAPS_KEY, zoom: leafletInstance.getZoom(),
+        north: clamp(b.getNorth(), 90), south: clamp(b.getSouth(), 90),
+        east: clamp(b.getEast(), 180), west: clamp(b.getWest(), 180),
+      });
+      let copyright = '';
+      try {
+        const res = await fetch('https://tile.googleapis.com/tile/v1/viewport?' + q);
+        if (res.ok) copyright = (await res.json()).copyright || '';
+      } catch { /* jaringan gagal: pakai teks bawaan */ }
+      if (session !== (currentBase && currentBase.gSession)) return;   // lapisan sudah berganti
+      text = esc(copyright || `Map data ©${new Date().getFullYear()} Google`);
+    }
+    if (text === googleAttrib) return;
+    if (googleAttrib) ctl.removeAttribution(googleAttrib);
+    if (text) ctl.addAttribution(text);
+    googleAttrib = text;
+  }, 250);
 }
 
 // Koordinat item; kontribusi tanpa koordinat ditaruh di tengah provinsinya.
